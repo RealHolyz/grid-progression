@@ -38,40 +38,49 @@ RunStructuresSetup.setup("Sellers", RunSeller, "runSeller", activeSellers)
 
 --[[
 
-Modules that require ProfileStoreManager -> To be replaced with DataStore
-	DataStoreService: Handles data management for a unique server ID
+	TO-DO
+
+	Implement Currency (Tokens)
+	  ModuleScript: StructureAttributes -> Include initial structure buy cost
+	  ModuleScript: RunSeller -> Increases server's tokens based on square's worth
+	  Add a buy shop
+
+	Restructure UI
+	  Remove Square category in inventory -> Server will display, physically, the most valuable squares
+	  Redesign the inventory: Inventory is sleeker with bought and NOT bought rotating structure models
+	  Add function: Updates client rendering each time a server data modification is called (PSM)
+	  Add Settings Icon (perhaps, could store player settings in a PSM playerstore)
+
+	Organize ModuleScripts and hierarchies
+
+	Add Structure Properties
+	  Add new live functions: Move, Store, Sell, etc.
+	  Add new UI on right-click
+
+	Add new structures
+	  Add new ModuleScript: Modular structure additions and functionalities
+
+	Fix square color on generator spawn
+
+	Modifier Luck Application Revamp
+	  1. Luck stacking: diminishing returns -> compounded luck = (1) + sum(Luck_i - 1)/ i^2
+	  2. Luck upgrade cost curve: cost = 20x^5 per level
+	  3. Luck per level: luck = (1) + x^2 / 400
 	
-	1. Main ServerScript: Starts DataStoreService and module setups
-	2. DataStoreService:
-		if private: grabs data using "PrivateWorld_" .. PrivateServerOwnerID if it exists
-		if public: starts from default world template module
-	3. Autosave using DataStore Service
-	4. Save on server IsClosing
+	Add platforms
+	  Platforms: seperates factory lines -> max 1 generator/seller, but infinite modifiers
+	  Add a platform overview -> players can edit placements or size of a platform
+	  Platform configurations
 	
-	No:
-		DisplaySquare - Builds initial display from a generator
-		RunGenerator - Spawns a single thread to spawn squares for live generators using DisplaySquare
-		RunModifier - Spawns a single thread to apply modifiers to all squares using StructureAttributes
-		AttributesModule - Square attributes calculations and returns important square data
-		RunStructureSetup - Generalized structure setup for all structures
-		StructureAttributes - Handles attributes (upgrades, rate of cost, etc.)
-		StructureFactory - Returns a structure table for the client to use
-		StructureManager - Physical creation or removal of structures
-		EditStructureClient - Client right clicks to show properties
-		PlacementClient - Handles placing previews and feedback from PlacementServer
+	Add modifier types (Prestige #)
+		Resurrection 1: Splitter = chance to duplicate squares
+		Resurrection 2: Reroller = chance to reroll the worst attribute
 		
-		
-	Yes:
-		RunSeller - Handles square rarity/attribute calculations, uses ProfileStoreManager to get player data -> modifies Rarity Points
-		StructurePlaceModule - Handles physical placement and data modification, ex. # of structures owned, 
-		PlacementServer - Boots up ProfileStoreManager
-		PlayerData - Default player template for ProfileStoreManager
-	
-	Once DataStoreService and MemoryStoreService is implemented, 
-		
-		
-		
+		Transcendence 1: Support = adds an upgrade to EVERY modifier
+	  
+  
 ]]
+
 
 
 

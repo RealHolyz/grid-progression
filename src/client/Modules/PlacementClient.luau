@@ -94,7 +94,6 @@ function PlacementClient.StartPlacement(player, structureName, onResult)
 			if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
 				local success, request = StructurePlace:InvokeServer(structureName, previewModel_CFrame, structureRotation)
 				onResult(success)
-				print(success)
 				if success then
 					previewModel:Destroy() 
 					inputConnection:Disconnect()

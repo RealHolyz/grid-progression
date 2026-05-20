@@ -48,7 +48,7 @@ local function build_ComputedDisplay_Computation(square)
 		end
 	end
 	
-	local sell_Value = (40.5 ^ (square_Rarity / 3)) /  100
+	local sell_Value = (40.5 ^ (math.log10(square_Rarity) / 3)) /  100
 	
 	return sell_Value
 end
@@ -75,6 +75,7 @@ function RunSeller.runSeller(activeSellers, BaseSeller: Model)
 		hitbox.Touched:Connect(function(hit)
 			if hit:GetAttribute("Computed") and hit:IsA("Part") then
 				sell_value = build_ComputedDisplay_Computation(hit)
+				--ProfileStoreManager.GetProfile().RarityPoints += sell_value
 			end
 		end)
 		

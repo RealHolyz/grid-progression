@@ -42,7 +42,7 @@ local worldProfile
 
 -- Creates a ProfileStore Object (public/private)
 local ServerStore = ProfileStore.New(privateServerKey, DefaultServerDataTemplate.DEFAULT_SERVER_DATA)
-local Profiles: {[number]: typeof(ServerStore:StartSessionAsync())} = {}
+local Profiles: {[string]: typeof(ServerStore:StartSessionAsync())} = {}
 
 local Shared = {}
 local Local = {}
@@ -65,7 +65,7 @@ end
 
 -- Loads server data
 function Local.OnStart()
-	if ServerType == "Private" or "Test_Private" then
+	if ServerType == "Private" or ServerType == "Test_Private" then
 		
 		-- Get the private world save
 		worldProfile = ServerStore:StartSessionAsync(privateServerKey)
@@ -76,7 +76,9 @@ function Local.OnStart()
 		end
 	else
 		-- Public servers start from scratch: a default template
-		worldData = table.clone(DefaultServerDataTemplate.DEFAULT_SERVER_DATA)
+		worldData = {
+			Data = table.clone(DefaultServerDataTemplate.DEFAULT_SERVER_DATA)
+		}
 	end
 	isReady = true
 end
@@ -96,6 +98,11 @@ function Shared.GetData()
 	return worldData
 end
 
+-- Returns server profile
+function Shared.GetProfile()
+	return worldProfile
+end
+
 -- returns the current state of profile's structures count
 local function returnCurrentStructureData()
 	local data = {}
@@ -106,16 +113,17 @@ local function returnCurrentStructureData()
 	end
 	return data
 end
+
 -- Player added, load their UI
 Players.PlayerAdded:Connect(function(player)
 	while not isReady do
 		task.wait()
 	end
-	
 	Events.GetInitProfile:InvokeClient(player, returnCurrentStructureData())
 end)
 
 
 Local.OnStart()
+
 
 return Shared
