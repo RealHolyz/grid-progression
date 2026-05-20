@@ -7,6 +7,8 @@ local ProfileStore = require(ServerScriptService.Libraries.ProfileStore)
 local DefaultServerDataTemplate = require(ReplicatedStorage.Modules.DefaultServiceDataTemplate)
 local StructureFactory = require(ServerScriptService.Modules.StructureFactory)
 
+local StructureAttributes = require(ServerScriptService.Modules.StructureAttributes)
+
 local Events = ReplicatedStorage:WaitForChild("Events")
 
 --[[
@@ -118,6 +120,21 @@ end
 Players.PlayerAdded:Connect(function(player)
 	while not isReady do
 		task.wait()
+	end
+	
+	-- Get profile data -> init PlacedStructures
+	local profile_PlacedStructures = worldProfile.Data.PlacedStructures
+	
+	for _, structure in pairs(profile_PlacedStructures) do
+		
+		local structure_Name = structure.Type
+		local structure_Rotation = structure.rotation
+		local structure_CFrame = CFrame.new(structure.Position.X, structure.Position.Y, structure.Position.Z) * CFrame.Angles(0, math.rad(structure_Rotation), 0)
+		local structure_Tier = structure.Data.Tier
+		
+		local structure_Model = ReplicatedStorage.StructureBaseModels:WaitForChild(structure_Name)
+		
+		Events.InitStructurePlace:Fire(structure_Model, structure_Name, structure_Tier, structure_CFrame, structure_Rotation, false)
 	end
 	Events.GetInitProfile:InvokeClient(player, returnCurrentStructureData())
 end)

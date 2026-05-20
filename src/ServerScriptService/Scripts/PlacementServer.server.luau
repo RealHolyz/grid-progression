@@ -15,7 +15,9 @@ local RunModifier = StructureFunctionalities.BaseModifier.RunModifier
 local RunSeller = StructureFunctionalities.BaseSeller.RunSeller
 
 -- Events
+local InitStructurePlace = ReplicatedServer.Events.InitStructurePlace
 local StructurePlace = ReplicatedServer.Events.StructurePlace
+
 
 -- Variables
 local activeGenerators = {}
@@ -25,10 +27,18 @@ local activeSellers = {}
 -- Startup
 require(Modules.ProfileStoreManager)
 
--- Placing Structures
+-- Initial and Runtime Structure Placement
+	-- Initial Structure Setup
+InitStructurePlace.Event:Connect(function(structure_Model, structure_Name, structure_Tier, structure_CFrame, structure_Rotation, creatingData)
+	StructurePlaceModule.validatedPlace(structure_Model, structure_Name, structure_Tier, structure_CFrame, structure_Rotation, creatingData)
+end)
+
+	-- Runtime Structure Setup
 StructurePlace.OnServerInvoke = function(player, structureName, structure_CFrame, structureRotation)
 	return StructurePlaceModule.place(player, structureName, structure_CFrame, structureRotation)
 end
+
+
 
 -- Initial and Runtime structure functionalities
 RunStructuresSetup.setup("Generators", RunGenerator, "runGenerator", activeGenerators)

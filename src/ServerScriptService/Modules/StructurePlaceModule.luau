@@ -7,6 +7,36 @@ local StructureAttributes = require(Modules.StructureAttributes)
 
 local StructurePlaceModule = {}
 
+-- Server places initial places structures from session profile
+function StructurePlaceModule.validatedPlace(structure: Model, structure_Name, structure_Tier, structure_CFrame, structure_Rotation, creatingData: boolean)
+
+	-- Structure Init.
+	local structure_physical = structure:Clone()
+	local structureFolder = `{string.sub(structure_Name, 5)}s`
+	structure_physical.Parent = workspace.PlacedStructures[structureFolder]
+	structure_physical:PivotTo(structure_CFrame) 
+
+	-- Creating data IF ONLY client placing
+	if creatingData then
+		local playerNewStructureData = StructureFactory.CreateStructure(
+			structure_Name,
+			1,
+			{
+				X = structure_CFrame.X,
+				Y = structure_CFrame.Y,
+				Z = structure_CFrame.Z
+			},
+			structure_Rotation
+		)
+
+		ProfileStoreManager.GetProfile().Data.PlacedStructures[playerNewStructureData.ID] = playerNewStructureData
+	end
+
+	for key, value in pairs(StructureAttributes.SetData(structure_Name, 1)) do
+		structure_physical:SetAttribute(`{key}`, value)
+	end
+end
+
 function StructurePlaceModule.place(player, structureName, structure_CFrame, structureRotation)
 
 	local valid_placement = true
@@ -38,30 +68,7 @@ function StructurePlaceModule.place(player, structureName, structure_CFrame, str
 	end
 
 	if valid_placement then
-
-		local structure_physical = structure:Clone()
-		local structureFolder = `{string.sub(structureName, 5)}s`
-		structure_physical.Parent = workspace.PlacedStructures[structureFolder]
-		structure_physical:PivotTo(structure_CFrame) 
-
-		local playerNewStructureData = StructureFactory.CreateStructure(
-			structureName,
-			1,
-			{
-				X = structure_CFrame.X,
-				Y = structure_CFrame.Y,
-				Z = structure_CFrame.Z
-			},
-			structureRotation
-		)
-
-		profile.Data.PlacedStructures[playerNewStructureData.ID] = playerNewStructureData
-
-		for key, value in pairs(StructureAttributes.SetData(structureName, 1)) do
-			structure_physical:SetAttribute(`{key}`, value)
-		end
-		
-		
+		StructurePlaceModule.validatedPlace(structure, structureName, 1, structure_CFrame, structureRotation, true)
 	end
 
 	return valid_placement
