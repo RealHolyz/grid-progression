@@ -25,7 +25,7 @@ ProfileServerModule Routine:
 -- Checks if the server type is public or private OR playtesting
 local ownerID = game.PrivateServerOwnerId
 local ServerType = "Public"
-local privateServerKey = "Private_" .. tostring(ownerID)
+local privateServerKey = "Private_" .. tostring(ownerID + 1)
 local isReady = false
 
 if ownerID then 
@@ -52,15 +52,7 @@ local Local = {}
 -- Loads the server profile !!PRIVATE SERVERS!!
 function Local.LoadProfile(server: string)
 	local profile = ServerStore:StartSessionAsync(privateServerKey)
-	--[[
-	Instead of manually creating structures:
-		Check count
-		Decrement count using PSM getter
-		Use CreateStructure
-	]]
 	profile:Reconcile()
-	
-	
 end
 
 -- Loads server data
@@ -70,6 +62,7 @@ function Local.OnStart()
 		-- Get the private world save
 		worldProfile = ServerStore:StartSessionAsync(privateServerKey)
 		-- Load in the place with private server data
+		
 		if worldProfile then
 			worldProfile:Reconcile()
 			worldData = worldProfile
@@ -103,7 +96,8 @@ function Shared.GetProfile()
 	return worldProfile
 end
 
--- returns the current state of profile's structures count
+----- Misc. -----
+-- Returns the current state of profile's structures count
 local function returnCurrentStructureData()
 	local data = {}
 	for structure, count in pairs(worldData.Data.Structures) do

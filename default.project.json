@@ -32,10 +32,10 @@
       }
     },
     "ReplicatedStorage": {
-      "$path": "src/ReplicatedStorage"
+      "$path": "Workspace/ReplicatedStorage"
     },
     "ServerScriptService": {
-      "$path": "src/ServerScriptService"
+      "$path": "Workspace/ServerScriptService"
     },
     "SoundService": {
       "$properties": {
@@ -45,7 +45,7 @@
     },
     "StarterPlayer": {
       "StarterPlayerScripts": {
-        "$path": "src/client"
+        "$path": "Workspace/client"
       },
       "$properties": {
         "AvatarJointUpgrade_SerializedRollout": "Enabled",

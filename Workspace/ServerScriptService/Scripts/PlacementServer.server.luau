@@ -88,7 +88,13 @@ RunStructuresSetup.setup("Sellers", RunSeller, "runSeller", activeSellers)
 		
 		Transcendence 1: Support = adds an upgrade to EVERY modifier
 	  
-  
+cd "C:\Users\Huy\OneDrive\Documents\ScriptingProjects\Grid Progression"
+$env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
+rojo syncback --input "C:\Users\Huy\OneDrive\Documents\GridProgression.rbxl"
+git add .
+git commit -m "update scripts"
+git push
+
 ]]
 
 

@@ -30,11 +30,13 @@ function StructurePlaceModule.validatedPlace(structure: Model, structure_Name, s
 		)
 
 		ProfileStoreManager.GetProfile().Data.PlacedStructures[playerNewStructureData.ID] = playerNewStructureData
+		structure_physical:SetAttribute("ID", playerNewStructureData.ID)
 	end
 
 	for key, value in pairs(StructureAttributes.SetData(structure_Name, 1)) do
 		structure_physical:SetAttribute(`{key}`, value)
 	end
+	
 end
 
 function StructurePlaceModule.place(player, structureName, structure_CFrame, structureRotation)
