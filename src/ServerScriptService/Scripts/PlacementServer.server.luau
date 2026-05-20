@@ -7,7 +7,6 @@ local ServerScriptService = game:GetService("ServerScriptService")
 local Modules = ServerScriptService.Modules
 local StructureFunctionalities = Modules.StructureFunctionalities
 	-- ServerScript Dependencies
-local ProfileStoreManager = require(Modules.ProfileStoreManager)
 local StructurePlaceModule = require(Modules.StructurePlaceModule)
 local RunStructuresSetup = require(StructureFunctionalities.RunStructuresSetup)
 	-- Structure Run Modules
@@ -24,7 +23,7 @@ local activeModifiers = {}
 local activeSellers = {}
 
 -- Startup
-require(ServerScriptService.Modules.ProfileStoreManager)
+require(Modules.ProfileStoreManager)
 
 -- Placing Structures
 StructurePlace.OnServerInvoke = function(player, structureName, structure_CFrame, structureRotation)
