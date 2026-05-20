@@ -7,8 +7,6 @@ local ProfileStore = require(ServerScriptService.Libraries.ProfileStore)
 local DefaultServerDataTemplate = require(ReplicatedStorage.Modules.DefaultServiceDataTemplate)
 local StructureFactory = require(ServerScriptService.Modules.StructureFactory)
 
-local StructureAttributes = require(ServerScriptService.Modules.StructureAttributes)
-
 local Events = ReplicatedStorage:WaitForChild("Events")
 
 --[[

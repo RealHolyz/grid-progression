@@ -32,9 +32,7 @@
       }
     },
     "ReplicatedStorage": {
-      "Shared": {
-        "$path": "src/shared"
-      }
+      "$path": "src/ReplicatedStorage"
     },
     "ServerScriptService": {
       "$path": "src/ServerScriptService"
@@ -45,10 +43,10 @@
         "RespectFilteringEnabled": true
       }
     },
-   "StarterPlayer": {
-    "StarterPlayerScripts": {
-    "$path": "src/client"
-   },
+    "StarterPlayer": {
+      "StarterPlayerScripts": {
+        "$path": "src/client"
+      },
       "$properties": {
         "AvatarJointUpgrade_SerializedRollout": "Enabled",
         "CameraMaxZoomDistance": 128.0,
