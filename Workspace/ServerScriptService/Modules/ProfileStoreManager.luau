@@ -25,7 +25,7 @@ ProfileServerModule Routine:
 -- Checks if the server type is public or private OR playtesting
 local ownerID = game.PrivateServerOwnerId
 local ServerType = "Public"
-local privateServerKey = "Private_" .. tostring(ownerID + 1)
+local privateServerKey = "Private_" .. tostring(ownerID + 2)
 local isReady = false
 
 if ownerID then 
@@ -117,7 +117,7 @@ Players.PlayerAdded:Connect(function(player)
 	-- Get profile data -> init PlacedStructures
 	local profile_PlacedStructures = worldProfile.Data.PlacedStructures
 	
-	for _, structure in pairs(profile_PlacedStructures) do
+	for ID, structure in pairs(profile_PlacedStructures) do
 		
 		local structure_Name = structure.Type
 		local structure_Rotation = structure.rotation
@@ -126,13 +126,20 @@ Players.PlayerAdded:Connect(function(player)
 		
 		local structure_Model = ReplicatedStorage.StructureBaseModels:WaitForChild(structure_Name)
 		
-		Events.InitStructurePlace:Fire(structure_Model, structure_Name, structure_Tier, structure_CFrame, structure_Rotation, false)
+		Events.InitStructurePlace:Fire(structure_Model, structure_Name, structure_Tier, structure_CFrame, structure_Rotation, false, ID)
 	end
+	print(worldProfile)
 	Events.GetInitProfile:InvokeClient(player, returnCurrentStructureData())
 end)
 
+local StructurePropertiesFunctions = require(ServerScriptService.Modules.StructureFunctionalities.StructurePropertiesFunctions)
+
+Events.ExecuteProperties.OnServerInvoke = function(player, structure, property, ...)
+	StructurePropertiesFunctions.executeProperty(structure, property, worldProfile, ...)
+end
 
 Local.OnStart()
+
 
 
 return Shared

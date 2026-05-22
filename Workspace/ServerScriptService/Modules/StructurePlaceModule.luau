@@ -8,14 +8,15 @@ local StructureAttributes = require(Modules.StructureAttributes)
 local StructurePlaceModule = {}
 
 -- Server places initial places structures from session profile
-function StructurePlaceModule.validatedPlace(structure: Model, structure_Name, structure_Tier, structure_CFrame, structure_Rotation, creatingData: boolean)
+function StructurePlaceModule.validatedPlace(structure: Model, structure_Name, structure_Tier, structure_CFrame, structure_Rotation, creatingData: boolean, ...)
 
 	-- Structure Init.
 	local structure_physical = structure:Clone()
 	local structureFolder = `{string.sub(structure_Name, 5)}s`
+	
 	structure_physical.Parent = workspace.PlacedStructures[structureFolder]
 	structure_physical:PivotTo(structure_CFrame) 
-
+	
 	-- Creating data IF ONLY client placing
 	if creatingData then
 		local playerNewStructureData = StructureFactory.CreateStructure(
@@ -28,11 +29,14 @@ function StructurePlaceModule.validatedPlace(structure: Model, structure_Name, s
 			},
 			structure_Rotation
 		)
-
-		ProfileStoreManager.GetProfile().Data.PlacedStructures[playerNewStructureData.ID] = playerNewStructureData
-		structure_physical:SetAttribute("ID", playerNewStructureData.ID)
+		
+		local structure_ID = playerNewStructureData.ID
+		
+		ProfileStoreManager.GetProfile().Data.PlacedStructures[structure_ID] = playerNewStructureData
+		structure_physical:SetAttribute("ID", structure_ID)
 	end
-
+	
+	structure_physical:SetAttribute("ID", ...)
 	for key, value in pairs(StructureAttributes.SetData(structure_Name, 1)) do
 		structure_physical:SetAttribute(`{key}`, value)
 	end

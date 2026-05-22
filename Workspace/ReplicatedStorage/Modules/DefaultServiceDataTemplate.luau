@@ -8,7 +8,7 @@ local Shared = {}
 		},
 		PlacedStructures = {},
 		Squares = {},
-		RarityPoints = 0,
+		Tokens = 0,
 	}
 export type ServerData = typeof(Shared.DEFAULT_SERVER_DATA)
 

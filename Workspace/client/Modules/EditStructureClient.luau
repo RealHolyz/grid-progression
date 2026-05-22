@@ -1,3 +1,5 @@
+local ExecuteProperties = game:GetService("ReplicatedStorage").Events.ExecuteProperties
+local playerGui = game:GetService("Players").LocalPlayer.PlayerGui
 local EditStructureClient = {}
 
 local propertiesMap = {
@@ -5,22 +7,15 @@ local propertiesMap = {
 	BaseModifier = {"Move", "Sell", "Store", "Upgrade", "View Stats", "Exit"},
 	BaseSeller = {"Move", "Sell", "Store", "Upgrade", "View Stats", "Exit"}
 }
-
-local function store(structure)
-	--[[
-	In order to store the structure:
-		Set up or get data attributes of the structure (refer to StructureFactory)
-	]]
-end
-
 local function showProperties(structure: Model)
 	local billboardGUI = Instance.new("BillboardGui")
-	billboardGUI.Parent = structure
-	billboardGUI.Adornee = structure.PrimaryPart
+	billboardGUI.Parent = playerGui
+	billboardGUI.Adornee = structure.PrimaryPart or structure:FindFirstChildWhichIsA("BasePart")
 	billboardGUI.Size = UDim2.new(0, 200, 0, 50)
 	billboardGUI.StudsOffset = Vector3.new(10, 5, 0)
 	billboardGUI.Enabled = true
 	billboardGUI.AlwaysOnTop = true
+	billboardGUI.Active = true
 
 	local frame = Instance.new("Frame")
 	frame.Parent = billboardGUI
@@ -28,6 +23,7 @@ local function showProperties(structure: Model)
 	frame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
 	frame.BackgroundTransparency = 0.2
 	frame.BorderSizePixel = 1
+	frame.Active = true
 	
 	local UIPadding = Instance.new("UIPadding")
 	UIPadding.Parent = frame
@@ -44,22 +40,30 @@ local function showProperties(structure: Model)
 	UIGridLayout.Parent = frame
 	UIGridLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
 	UIGridLayout.VerticalAlignment = Enum.VerticalAlignment.Center
-	UIGridLayout.CellPadding = UDim2.new(0, 2, 0, 2)
-	UIGridLayout.CellSize = UDim2.new(0.323, 0, 0.5, 0)
+	UIGridLayout.CellPadding = UDim2.new(0, 4, 0, 4)
+	UIGridLayout.CellSize = UDim2.new(0, 58, 0, 20)
+	UIGridLayout.SortOrder = Enum.SortOrder.LayoutOrder
+	
 	
 	for _, property in ipairs(propertiesMap[`{structure.Name}`]) do
 		local textbutton = Instance.new("TextButton")
 		textbutton.Name = property
 		textbutton.Parent = frame
-		textbutton.Size = UDim2.new(0, 10, 0, 5)
+		textbutton.Size = UDim2.new(0, 58, 0, 20)
 		textbutton.BackgroundColor3 = Color3.new(0.529412, 0.529412, 0.529412)
+		textbutton.Active = true
 		textbutton.Text = property
 		textbutton.Font = Enum.Font.Highway
-		textbutton.TextSize = 14
+		textbutton.TextSize = 12
 		
 		local UICorner = Instance.new("UICorner")
 		UICorner.Parent = textbutton
 		UICorner.CornerRadius = UDim.new(0, 5)
+		
+		textbutton.MouseButton1Click:Connect(function()
+			print(structure:GetAttribute("ID"))
+			ExecuteProperties:InvokeServer(structure, property)
+		end)
 	end
 end
 

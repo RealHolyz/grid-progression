@@ -29,8 +29,8 @@ require(Modules.ProfileStoreManager)
 
 -- Initial and Runtime Structure Placement
 	-- Initial Structure Setup
-InitStructurePlace.Event:Connect(function(structure_Model, structure_Name, structure_Tier, structure_CFrame, structure_Rotation, creatingData)
-	StructurePlaceModule.validatedPlace(structure_Model, structure_Name, structure_Tier, structure_CFrame, structure_Rotation, creatingData)
+InitStructurePlace.Event:Connect(function(structure_Model, structure_Name, structure_Tier, structure_CFrame, structure_Rotation, creatingData, ID)
+	StructurePlaceModule.validatedPlace(structure_Model, structure_Name, structure_Tier, structure_CFrame, structure_Rotation, creatingData, ID)
 end)
 
 	-- Runtime Structure Setup
