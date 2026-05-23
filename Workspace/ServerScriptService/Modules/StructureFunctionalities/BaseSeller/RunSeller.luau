@@ -1,7 +1,9 @@
 local AttributesModule = require(game:GetService("ServerScriptService").Modules.StructureFunctionalities.BaseSeller.AttributesModule)
 local ProfileStoreManager = require(game:GetService("ServerScriptService").Modules.ProfileStoreManager)
-local RunSeller = {}
+local UpdateStatistics = game:GetService("ReplicatedStorage").Events.UpdateStatistics
 
+local RunSeller = {}
+local RunSellTable = {}
 -- Rarity Computation functions
 local suffixes = {
 	{limit = 1e6,  suffix = "%.0f", divisor = 1},
@@ -53,33 +55,33 @@ local function build_ComputedDisplay_Computation(square)
 	return sell_Value
 end
 
-local function sellSquare(BaseSeller: Model)
+local function sellSquare(BaseSeller: Model, sell_value)
 	local hitbox = BaseSeller:WaitForChild("SellHitbox")
 	hitbox.Touched:Connect(function(hit)
-		if hit:IsA("Part") and hit:GetAttribute("Computed") then
+		if not RunSellTable[hit] and hit:IsA("Part") and hit:GetAttribute("Computed") then
+			RunSellTable[hit] = true
 			
-				-- server stores the number of rarity points
+			task.wait()
 			hit:Destroy()
+			
+			RunSellTable[hit] = nil
+			ProfileStoreManager.GetProfile().Data.Tokens += sell_value
+			UpdateStatistics:FireAllClients(ProfileStoreManager.GetProfile())
 		end
 	end)
 end
 
 -- Computed Display is per BaseSeller
 function RunSeller.runSeller(activeSellers, BaseSeller: Model)
-	
-	local sell_value
 	if not activeSellers[BaseSeller] then
 		activeSellers[BaseSeller] = true
 		local hitbox = BaseSeller:WaitForChild("ComputeHitbox")
-
 		hitbox.Touched:Connect(function(hit)
 			if hit:GetAttribute("Computed") and hit:IsA("Part") then
-				sell_value = build_ComputedDisplay_Computation(hit)
-				--ProfileStoreManager.GetProfile().RarityPoints += sell_value
+				local sell_value = build_ComputedDisplay_Computation(hit)
+				sellSquare(BaseSeller, sell_value)
 			end
 		end)
-		
-		sellSquare(BaseSeller)
 	end
 end
 

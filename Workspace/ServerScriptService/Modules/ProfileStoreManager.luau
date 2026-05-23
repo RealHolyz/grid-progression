@@ -126,7 +126,6 @@ Players.PlayerAdded:Connect(function(player)
 	end
 	
 	-- Get profile data -> init PlacedStructures
-	
 	worldProfile:Reconcile()
 	
 	local profile_PlacedStructures = worldProfile.Data.PlacedStructures
@@ -144,6 +143,7 @@ Players.PlayerAdded:Connect(function(player)
 	end
 	
 	Events.GetInitProfile:FireClient(player, returnCurrentStructureData())
+	Events.UpdateStatistics:FireAllClients(worldProfile)
 end)
 
 local ExecuteProperties = game:GetService("ReplicatedStorage").Events.ExecuteProperties
@@ -155,6 +155,4 @@ end
 	
 Local.OnStart()
 
-
-print(worldProfile)
 return Shared
