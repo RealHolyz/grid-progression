@@ -26,7 +26,7 @@ ProfileServerModule Routine:
 -- Checks if the server type is public or private OR playtesting
 local ownerID = game.PrivateServerOwnerId
 local ServerType = "Public"
-local privateServerKey = "Private_" .. tostring(ownerID + 7) -- welp time to increase this every time i run out of structures
+local privateServerKey = "Private_" .. tostring(ownerID + 11) -- welp time to increase this every time i run out of structures
 local isReady = false
 
 if ownerID then 
@@ -54,7 +54,7 @@ local Local = {}
 function Local.LoadProfile(server: string)
 	local profile = ServerStore:StartSessionAsync(privateServerKey)
 	profile:Reconcile()
-end
+end 
 
 -- Loads server data
 function Local.OnStart()
@@ -127,11 +127,11 @@ Players.PlayerAdded:Connect(function(player)
 	
 	-- Get profile data -> init PlacedStructures
 	worldProfile:Reconcile()
-	
+	print(worldProfile)
 	local profile_PlacedStructures = worldProfile.Data.PlacedStructures
 	
 	for ID, structure in pairs(profile_PlacedStructures) do
-		
+		 
 		local structure_Name = structure.Type
 		local structure_Rotation = structure.rotation
 		local structure_CFrame = CFrame.new(structure.Position.X, structure.Position.Y, structure.Position.Z) * CFrame.Angles(0, math.rad(structure_Rotation), 0)
@@ -152,7 +152,7 @@ ExecuteProperties.OnServerInvoke = function(player, structure, property)
 	local profile_data = Shared.GetProfile()
 	StructureFunctionsProperties.executeProperties(player, structure, property, profile_data)
 end
-	
+
 Local.OnStart()
 
 return Shared

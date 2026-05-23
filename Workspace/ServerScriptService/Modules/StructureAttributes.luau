@@ -4,19 +4,19 @@ function StructureAttributes.SetData(structureName: string, tier: number)
 	local structuresMap = {
 		Tier = tier,
 		BaseGenerator = {
-			AttributeFactor = 5.25 - 0.25 * tier,
-			MaxUpgrades = 20,
+			AttributeFactor = 5 / tier ^ 1.1,
+			MaxUpgrades = 50,
 			Cost = math.floor(5 * math.e ^ tier)
 		},
 		BaseModifier = {
-			AttributeFactor = 0.05 * tier - 0.05,
-			MaxUpgrades = 10,
-			Cost = math.floor(100 * math.e ^ tier)
+			AttributeFactor = (tier ^ 2) / 100,
+			MaxUpgrades = 100,
+			Cost = math.floor(2 ^ tier)
 		},
 		BaseSeller = {
 			AttributeFactor = 0.9 + 0.1 * tier,
 			MaxUpgrades = 50,
-			Cost = math.floor(math.e ^ (2 * tier))
+			Cost = math.floor(5 * 2 ^ tier)
 		}
 	}
 	
@@ -47,4 +47,24 @@ TO-DO
         Each increasing level would add a factor of 0.1 to the finalized worth of each square (Default: 1)
         Cost per level: l(x) = floor(e^2x)
         MAX: +5x worth, 50 upgrades
+        
+        
+    local structuresMap = {
+		Tier = tier,
+		BaseGenerator = {
+			AttributeFactor = 5 - 2.1 * math.log(tier, math.e),
+			MaxUpgrades = 20,
+			Cost = math.floor(5 * math.e ^ tier)
+		},
+		BaseModifier = {
+			AttributeFactor = (tier ^ 2) / 400,
+			MaxUpgrades = 20,
+			Cost = math.floor(5 * tier ^ 5)
+		},
+		BaseSeller = {
+			AttributeFactor = 0.9 + 0.1 * tier,
+			MaxUpgrades = 50,
+			Cost = math.floor(math.e ^ (2 * tier))
+		}
+	}
 ]]

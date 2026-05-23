@@ -1,6 +1,8 @@
 local AttributesModule = require(game:GetService("ServerScriptService").Modules.StructureFunctionalities.BaseSeller.AttributesModule)
 local ProfileStoreManager = require(game:GetService("ServerScriptService").Modules.ProfileStoreManager)
 local UpdateStatistics = game:GetService("ReplicatedStorage").Events.UpdateStatistics
+local StructureAttributes = require(game:GetService("ServerScriptService").Modules.StructureAttributes)
+
 
 local RunSeller = {}
 local RunSellTable = {}
@@ -57,6 +59,14 @@ end
 
 local function sellSquare(BaseSeller: Model, sell_value)
 	local hitbox = BaseSeller:WaitForChild("SellHitbox")
+	
+	-- Gets ID and sets attribute
+	local structure_ID = BaseSeller:GetAttribute("ID")
+	local structure_attributes = StructureAttributes.SetData(`{BaseSeller.Name}`, ProfileStoreManager.GetProfile().Data.PlacedStructures[structure_ID].Data.Tier)
+	local structure_AttributeFactor = structure_attributes.AttributeFactor
+
+	BaseSeller:SetAttribute("AttributeFactor", structure_AttributeFactor)
+	
 	hitbox.Touched:Connect(function(hit)
 		if not RunSellTable[hit] and hit:IsA("Part") and hit:GetAttribute("Computed") then
 			RunSellTable[hit] = true
@@ -65,7 +75,7 @@ local function sellSquare(BaseSeller: Model, sell_value)
 			hit:Destroy()
 			
 			RunSellTable[hit] = nil
-			ProfileStoreManager.GetProfile().Data.Tokens += sell_value
+			ProfileStoreManager.GetProfile().Data.Tokens += sell_value * BaseSeller:GetAttribute("AttributeFactor")
 			UpdateStatistics:FireAllClients(ProfileStoreManager.GetProfile())
 		end
 	end)

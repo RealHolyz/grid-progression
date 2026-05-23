@@ -1,4 +1,10 @@
+local PhysicsService = game:GetService("PhysicsService")
+
+
 local DisplaySquare = {}
+
+PhysicsService:RegisterCollisionGroup("Squares")
+PhysicsService:CollisionGroupSetCollidable("Squares", "Squares", false)
 
 function DisplaySquare.build_InitialDisplay(BaseGenerator_CFrame, BaseSeller, isComputed)
 	
@@ -6,11 +12,14 @@ function DisplaySquare.build_InitialDisplay(BaseGenerator_CFrame, BaseSeller, is
 	local square = Instance.new("Part")
 	--square.Name = "Square_" .. square_Rarity
 	square.Parent = game.Workspace.GeneratedSquares
+	square.Name = "Square"
 	square.Size = Vector3.new(4, 1, 4)
 	square.Position = BaseGenerator_CFrame.Position + Vector3.new(0, 9, 0)
 	square.Anchored = false	
 	square.CanCollide = true
 	square.Transparency = 0.4
+	
+	square.CollisionGroup = "Squares"
 	
 	-- Luck
 	square:SetAttribute("Luck", 1)
@@ -35,6 +44,7 @@ function DisplaySquare.build_InitialDisplay(BaseGenerator_CFrame, BaseSeller, is
 	
 	isComputed = true
 	square:SetAttribute("Computed", isComputed)
+	square:SetNetworkOwner(nil)
 end
 
 return DisplaySquare

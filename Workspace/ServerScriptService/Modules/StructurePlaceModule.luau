@@ -22,7 +22,7 @@ function StructurePlaceModule.validatedPlace(structure: Model, structure_Name, s
 	if creatingData then
 		local playerNewStructureData = StructureFactory.CreateStructure(
 			structure_Name,
-			1,
+			structure_Tier,
 			{
 				X = structure_CFrame.X,
 				Y = structure_CFrame.Y,
