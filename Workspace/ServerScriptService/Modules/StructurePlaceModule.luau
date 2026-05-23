@@ -4,6 +4,7 @@ local Modules = ServerScriptService.Modules
 local ProfileStoreManager = require(Modules.ProfileStoreManager)
 local StructureFactory = require(Modules.StructureFactory)
 local StructureAttributes = require(Modules.StructureAttributes)
+local GetProfile = ReplicatedServer.Events.GetProfile
 
 local StructurePlaceModule = {}
 
@@ -31,12 +32,14 @@ function StructurePlaceModule.validatedPlace(structure: Model, structure_Name, s
 		)
 		
 		local structure_ID = playerNewStructureData.ID
-		
+
 		ProfileStoreManager.GetProfile().Data.PlacedStructures[structure_ID] = playerNewStructureData
 		structure_physical:SetAttribute("ID", structure_ID)
+		ProfileStoreManager.ReconcileProfile()
+	else
+		structure_physical:SetAttribute("ID", ...)
 	end
 	
-	structure_physical:SetAttribute("ID", ...)
 	for key, value in pairs(StructureAttributes.SetData(structure_Name, 1)) do
 		structure_physical:SetAttribute(`{key}`, value)
 	end

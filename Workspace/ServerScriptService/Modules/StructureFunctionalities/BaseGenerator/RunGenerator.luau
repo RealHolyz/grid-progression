@@ -10,11 +10,9 @@ function RunGenerator.runGenerator(activeGenerators, generator: Model)
 		task.spawn(function()
 			while activeGenerators[generator] and generator.Parent do
 				local generator_SpawnPeriod = generator:GetAttribute("AttributeFactor")
-				if not generator_SpawnPeriod then return end
-
-				task.wait(generator_SpawnPeriod)
-
 				DisplaySquares.build_InitialDisplay(generator:GetPivot())
+				
+				task.wait(generator_SpawnPeriod)
 			end
 		end)
 	end

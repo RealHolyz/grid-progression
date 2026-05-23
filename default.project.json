@@ -37,9 +37,6 @@
     "ServerScriptService": {
       "$path": "Workspace/ServerScriptService"
     },
-    "StarterGui": {
-      "$path": "src/StarterGui"
-    },
     "SoundService": {
       "$properties": {
         "DefaultListenerLocation": "Camera",

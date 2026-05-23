@@ -1,7 +1,9 @@
-local StructurePropertiesFunctions = {}
+local InventoryAddStructure = game:GetService("ReplicatedStorage").Events.InventoryAddStructure
+
+local StructureFunctionsProperties = {}
 
 local PropertiesMap = {
-	["Move"] = function(structure: Model) end,
+	["Move"] = function(structure: Model)
        --[[
            Get structure ID by attribute
 
@@ -14,6 +16,10 @@ local PropertiesMap = {
 
            Call the PlacementClient function -> PlacementServer
        ]]
+		local structure_ID = structure:GetAttribute("ID")
+
+
+	end,
 	["Sell"] = function(structure: Model) end,
        --[[
            Get structure ID by attribute
@@ -24,22 +30,27 @@ local PropertiesMap = {
            Remove existing structure and profile.Data.PlacedStructures key
            Add structure:GetAttribute("Worth") to server tokens
        ]]
-	["Store"] = function(structure: Model, profile_Data)
-       --[[
+	["Store"] = function(structure: Model, profile_Data, player)
+        --[[
            Get structure ID by attribute
            Find the structure within profile.Data.PlacedStructures
                Remove the key
            Add the count of the type of structure -> structureName
            Remove the structure itself
-       ]]
-
+        ]]
+	   
 		local structure_ID = structure:GetAttribute("ID")
 		
+		if profile_Data.Data.Structures[`{structure.Name}`] == 0 then
+			InventoryAddStructure:FireClient(player, profile_Data.Data.PlacedStructures[structure_ID])
+		end
+		
 		profile_Data.Data.PlacedStructures[structure_ID] = nil
+		
+		
+		
 		profile_Data.Data.Structures[`{structure.Name}`] += 1
-		
 		structure:Destroy()
-		
 	end,
 	["Upgrade"] = function(structure: Model) end,
        --[[
@@ -54,8 +65,8 @@ local PropertiesMap = {
 	["Exit"] = function(structure: Model) end
 }
 
-function StructurePropertiesFunctions.executeProperty(structure: Model, property, profile_data, ...)
-	PropertiesMap[property](structure, profile_data, ...)
+function StructureFunctionsProperties.executeProperties(player, structure, property, profile_Data, ...)
+	PropertiesMap[property](structure, profile_Data, player, ...)
 end
 
-return StructurePropertiesFunctions
+return StructureFunctionsProperties

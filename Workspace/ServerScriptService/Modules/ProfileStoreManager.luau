@@ -4,11 +4,12 @@ local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 
 local ProfileStore = require(ServerScriptService.Libraries.ProfileStore)
-local DefaultServerDataTemplate = require(ReplicatedStorage.Modules.DefaultServiceDataTemplate)
+local DefaultServerDataTemplate = require(ReplicatedStorage.Modules.ProfileStoreDependencies.DefaultServiceDataTemplate)
 local StructureFactory = require(ServerScriptService.Modules.StructureFactory)
+local StructureFunctionsProperties = require(ServerScriptService.Modules.StructureFunctionalities.StructureFunctionsProperties)
 
 local Events = ReplicatedStorage:WaitForChild("Events")
-
+local GetProfileEvent = Events.GetProfile
 --[[
 
 ProfileServerModule Routine:
@@ -25,7 +26,7 @@ ProfileServerModule Routine:
 -- Checks if the server type is public or private OR playtesting
 local ownerID = game.PrivateServerOwnerId
 local ServerType = "Public"
-local privateServerKey = "Private_" .. tostring(ownerID + 2)
+local privateServerKey = "Private_" .. tostring(ownerID + 7) -- welp time to increase this every time i run out of structures
 local isReady = false
 
 if ownerID then 
@@ -91,8 +92,18 @@ function Shared.GetData()
 	return worldData
 end
 
--- Returns server profile
+-- Returns server profile (serverside)
 function Shared.GetProfile()
+	worldProfile:Reconcile()
+	return worldProfile
+end
+
+function Shared.ReconcileProfile()
+	worldProfile:Reconcile()
+end
+
+-- Returns server profile on GetProfile
+GetProfileEvent.OnServerInvoke = function(player)
 	return worldProfile
 end
 
@@ -115,6 +126,9 @@ Players.PlayerAdded:Connect(function(player)
 	end
 	
 	-- Get profile data -> init PlacedStructures
+	
+	worldProfile:Reconcile()
+	
 	local profile_PlacedStructures = worldProfile.Data.PlacedStructures
 	
 	for ID, structure in pairs(profile_PlacedStructures) do
@@ -128,18 +142,19 @@ Players.PlayerAdded:Connect(function(player)
 		
 		Events.InitStructurePlace:Fire(structure_Model, structure_Name, structure_Tier, structure_CFrame, structure_Rotation, false, ID)
 	end
-	print(worldProfile)
-	Events.GetInitProfile:InvokeClient(player, returnCurrentStructureData())
+	
+	Events.GetInitProfile:FireClient(player, returnCurrentStructureData())
 end)
 
-local StructurePropertiesFunctions = require(ServerScriptService.Modules.StructureFunctionalities.StructurePropertiesFunctions)
+local ExecuteProperties = game:GetService("ReplicatedStorage").Events.ExecuteProperties
 
-Events.ExecuteProperties.OnServerInvoke = function(player, structure, property, ...)
-	StructurePropertiesFunctions.executeProperty(structure, property, worldProfile, ...)
+ExecuteProperties.OnServerInvoke = function(player, structure, property)
+	local profile_data = Shared.GetProfile()
+	StructureFunctionsProperties.executeProperties(player, structure, property, profile_data)
 end
-
+	
 Local.OnStart()
 
 
-
+print(worldProfile)
 return Shared

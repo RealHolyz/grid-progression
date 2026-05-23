@@ -1,5 +1,7 @@
-local ExecuteProperties = game:GetService("ReplicatedStorage").Events.ExecuteProperties
 local playerGui = game:GetService("Players").LocalPlayer.PlayerGui
+local GetProfile = game:GetService("ReplicatedStorage").Events.GetProfile
+local ExecuteProperties = game:GetService("ReplicatedStorage").Events.ExecuteProperties
+
 local EditStructureClient = {}
 
 local propertiesMap = {
@@ -7,6 +9,7 @@ local propertiesMap = {
 	BaseModifier = {"Move", "Sell", "Store", "Upgrade", "View Stats", "Exit"},
 	BaseSeller = {"Move", "Sell", "Store", "Upgrade", "View Stats", "Exit"}
 }
+
 local function showProperties(structure: Model)
 	local billboardGUI = Instance.new("BillboardGui")
 	billboardGUI.Parent = playerGui
@@ -61,16 +64,13 @@ local function showProperties(structure: Model)
 		UICorner.CornerRadius = UDim.new(0, 5)
 		
 		textbutton.MouseButton1Click:Connect(function()
-			print(structure:GetAttribute("ID"))
+			billboardGUI:Destroy()
 			ExecuteProperties:InvokeServer(structure, property)
 		end)
 	end
 end
 
-local function hideProperties(structure: Model)
-	local billboardGUI = structure:WaitForChild("BillboardGUI")
-	billboardGUI.Enabled = false
-end
+
 
 local function addInstances(structure: Model)
 	if structure:GetAttribute("EditSetup") then return end
