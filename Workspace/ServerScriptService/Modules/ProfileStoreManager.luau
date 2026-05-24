@@ -134,11 +134,26 @@ Players.PlayerAdded:Connect(function(player)
 	local profile_PlacedStructures = worldProfile.Data.PlacedStructures
 	
 	for ID, structure in pairs(profile_PlacedStructures) do
-		 
+		
+		local TESTING_TIER_MAP = {
+			["BaseGenerator"] = 1,
+			["BaseModifier"] = 1,
+			["BaseSeller"] = 1
+		}
+
+		local TESTING = true
+		local TESTING_PUBLIC = true
+
 		local structure_Name = structure.Type
 		local structure_Rotation = structure.rotation
 		local structure_CFrame = CFrame.new(structure.Position.X, structure.Position.Y, structure.Position.Z) * CFrame.Angles(0, math.rad(structure_Rotation), 0)
 		local structure_Tier = structure.Data.Tier
+		
+		if TESTING and not TESTING_PUBLIC then
+				structure_Tier = TESTING_TIER_MAP[tostring(structure_Name)]
+		else
+
+		
 		
 		local structure_Model = ReplicatedStorage.StructureBaseModels:WaitForChild(structure_Name)
 		
