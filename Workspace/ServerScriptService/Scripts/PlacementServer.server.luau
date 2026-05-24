@@ -50,11 +50,6 @@ RunStructuresSetup.setup("Sellers", RunSeller, "runSeller", activeSellers)
 
 	TO-DO
 
-	Implement Currency (Tokens)
-	  ModuleScript: StructureAttributes -> Include initial structure buy cost
-	  ModuleScript: RunSeller -> Increases server's tokens based on square's worth
-	  Add a buy shop
-
 	Restructure UI
 	  Remove Square category in inventory -> Server will display, physically, the most valuable squares
 	  Redesign the inventory: Inventory is sleeker with bought and NOT bought rotating structure models

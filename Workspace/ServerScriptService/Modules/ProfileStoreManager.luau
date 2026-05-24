@@ -26,7 +26,7 @@ ProfileServerModule Routine:
 -- Checks if the server type is public or private OR playtesting
 local ownerID = game.PrivateServerOwnerId
 local ServerType = "Public"
-local privateServerKey = "Private_" .. tostring(ownerID + 11) -- welp time to increase this every time i run out of structures
+local privateServerKey = "Private_" .. tostring(ownerID + 12) -- welp time to increase this every time i run out of structures, 11 is maxed out
 local isReady = false
 
 if ownerID then 
@@ -75,6 +75,8 @@ function Local.OnStart()
 		}
 	end
 	isReady = true
+	
+	
 end
 
 -- On server closing, autosave server data !!PRIVATE SERVERS!!
@@ -127,7 +129,7 @@ Players.PlayerAdded:Connect(function(player)
 	
 	-- Get profile data -> init PlacedStructures
 	worldProfile:Reconcile()
-	print(worldProfile)
+	
 	local profile_PlacedStructures = worldProfile.Data.PlacedStructures
 	
 	for ID, structure in pairs(profile_PlacedStructures) do
@@ -142,8 +144,18 @@ Players.PlayerAdded:Connect(function(player)
 		Events.InitStructurePlace:Fire(structure_Model, structure_Name, structure_Tier, structure_CFrame, structure_Rotation, false, ID)
 	end
 	
+	task.spawn(function()
+		while true do
+			task.wait(1)
+			worldProfile.Data.TotalTime += 1
+			Events.UpdateStatistics:FireAllClients(worldProfile)
+		end
+	end)
+	
 	Events.GetInitProfile:FireClient(player, returnCurrentStructureData())
 	Events.UpdateStatistics:FireAllClients(worldProfile)
+	
+	
 end)
 
 local ExecuteProperties = game:GetService("ReplicatedStorage").Events.ExecuteProperties

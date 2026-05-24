@@ -14,7 +14,7 @@ local currentStructure = nil
 -- Main Structural Frames / Components
 local sideFrame = game:GetService("Players").LocalPlayer.PlayerGui.ScreenGui.Inventory.SideFrames
 local structureSideFrame = sideFrame.StructuresSideFrame
-local descriptionBox = structureSideFrame.DescriptionBox
+local descriptionBox = structureSideFrame:FindFirstChild("DescriptionBox")
 
 -- Viewport
 local viewportCamera = Instance.new("Camera")

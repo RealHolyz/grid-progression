@@ -2,26 +2,43 @@ local DisplaySquares = require(game:GetService("ServerScriptService").Modules.St
 local StructureAttributes = require(game:GetService("ServerScriptService").Modules.StructureAttributes)
 local ProfileStoreManager = require(game:GetService("ServerScriptService").Modules.ProfileStoreManager)
 
-local RunGenerator = {}
 
+local RunGenerator = {}
 
 function RunGenerator.runGenerator(activeGenerators, generator: Model)
 	if not activeGenerators[generator] then
 		activeGenerators[generator] = true
 		
+		local structure_ID = generator:GetAttribute("ID")
+		local structure_attributes = StructureAttributes.SetData(`{generator.Name}`, ProfileStoreManager.GetProfile().Data.PlacedStructures[structure_ID].Data.Tier)
+		local structure_AttributeFactor = structure_attributes.AttributeFactor
+
+		generator:SetAttribute("AttributeFactor", structure_AttributeFactor)
+		
 		task.spawn(function()
 			
 			-- Gets ID and sets attribute
-			local structure_ID = generator:GetAttribute("ID")
-			local structure_attributes = StructureAttributes.SetData(`{generator.Name}`, ProfileStoreManager.GetProfile().Data.PlacedStructures[structure_ID].Data.Tier)
-			local structure_AttributeFactor = structure_attributes.AttributeFactor
 			
-			generator:SetAttribute("AttributeFactor", structure_AttributeFactor)
 			
 			while activeGenerators[generator] and generator.Parent do
 				DisplaySquares.build_InitialDisplay(generator:GetPivot())
 				
 				task.wait(generator:GetAttribute("AttributeFactor"))
+			end
+		end)
+		
+		local generator_Button: Part = generator:FindFirstChild("Button")
+		
+		
+		local click = Instance.new("ClickDetector")
+		click.Parent = generator_Button
+		
+		local lastClick = 0
+		click.MouseClick:Connect(function()
+			local currentTime = tick()
+			if currentTime-lastClick >= 0.25 then
+				lastClick = currentTime
+				DisplaySquares.build_InitialDisplay(generator:GetPivot())
 			end
 		end)
 	end

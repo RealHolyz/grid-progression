@@ -78,7 +78,7 @@ local function addInstances(structure: Model)
 	local click = Instance.new("ClickDetector")
 	click.Parent = structure
 	
-	click.RightMouseClick:Connect(function()
+	click.MouseClick:Connect(function()
 		showProperties(structure)
 	end)
 	
