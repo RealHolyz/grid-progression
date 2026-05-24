@@ -106,6 +106,7 @@ end
 
 -- Returns server profile on GetProfile
 GetProfileEvent.OnServerInvoke = function(player)
+	if not worldProfile then return worldData end
 	return worldProfile
 end
 
