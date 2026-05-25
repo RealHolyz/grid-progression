@@ -55,6 +55,14 @@ function PlacementClient.StartPlacement(player, structureName, onResult)
 		if previewModel and previewModel.Parent then
 			
 			local centerPart = previewModel:WaitForChild("CenterPart")
+			local hitboxPart = centerPart:Clone()
+			
+			hitboxPart.Parent = previewModel
+			hitboxPart.Size = Vector3.new(
+				centerPart.Size.X,
+				centerPart.Size.Y + 2,
+				centerPart.Size.Z
+			)
 			
 			local yOffset = centerPart.Size.Y / 2
 			local flooredHitPos = Vector3.new(
@@ -71,7 +79,7 @@ function PlacementClient.StartPlacement(player, structureName, onResult)
 			params.FilterType = Enum.RaycastFilterType.Exclude
 			params.ExcludeInstances = {previewModel, workspace.SpawnParts.Base}
 			
-			local prevParts = workspace:GetPartsInPart(centerPart, params)
+			local prevParts = workspace:GetPartsInPart(hitboxPart, params)
 			
 			if #prevParts > 0 then
 				setChildrenColor(previewModel, "Really red")

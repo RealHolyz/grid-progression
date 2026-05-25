@@ -10,31 +10,54 @@ local StructureFunctionsProperties = require(ServerScriptService.Modules.Structu
 
 local Events = ReplicatedStorage:WaitForChild("Events")
 local GetProfileEvent = Events.GetProfile
---[[
 
-ProfileServerModule Routine:
-	1. ServerScript boots up ProfileStoreManager
-	2. PSM loads data: PrivateServerOwnerID ? private : public
-		if private:
-			Key: "Private_" .. PrivateServerOwnerID
-			Value: StartSessionAsync object (from ProfileStore)
-		if public
-			Starts from DefaultServerDataTemplate
-			
-]]
 
--- Checks if the server type is public or private OR playtesting
+---------- TESTING  ----------
+
+local TESTING = true
+local TESTING_PUBLIC = false
+local TESTING_VARIABLES = false
+local TESTING_NUMBER = 3
+
+local TESTING_INIT_TOKENS = 0
+
+local TESTING_TIER_MAP = {
+	["BaseGenerator"] = 0,
+	["BaseModifier"] = 0,
+	["BaseSeller"] = 0,
+}
+
+---------- INIT. PROFILE/ DATA ----------
+
 local ownerID = game.PrivateServerOwnerId
-local ServerType = "Public"
-local privateServerKey = "Private_" .. tostring(ownerID + 12) -- welp time to increase this every time i run out of structures, 11 is maxed out
-local isReady = false
 
-if ownerID then 
-	ServerType = "Private" 
+-- TEST_PRIVATE NUMBER
+if not TESTING_PUBLIC and TESTING then
+	ownerID += TESTING_NUMBER
 end
 
-if RunService:IsStudio() then
-	ServerType = "Test_" .. ServerType
+local ServerType = "Public"
+local privateServerKey = "Private_" .. tostring(ownerID)
+local isReady = false
+
+if (ownerID ~= 0 and ownerID ~= "") then
+	if TESTING and not TESTING_PUBLIC then
+		print("Private Test Server")
+		ServerType = "Test_Private"
+		privateServerKey = "Test_" .. privateServerKey
+	else
+		print("Private Server")
+		ServerType = "Private"
+	end
+else
+	--privateServerKey = nil
+	if TESTING then
+		print("Public Test Server")
+		ServerType = "Test_Public"
+	else
+		print("Public Server")
+		ServerType = "Public"
+	end
 end
 
 -- World Data Init Variables
@@ -48,9 +71,11 @@ local Profiles: {[string]: typeof(ServerStore:StartSessionAsync())} = {}
 local Shared = {}
 local Local = {}
 
------ Local -----
 
--- Loads the server profile !!PRIVATE SERVERS!!
+-------------------- Local --------------------
+
+
+-- Loads the server profile
 function Local.LoadProfile(server: string)
 	local profile = ServerStore:StartSessionAsync(privateServerKey)
 	profile:Reconcile()
@@ -58,25 +83,32 @@ end
 
 -- Loads server data
 function Local.OnStart()
+	
+	-- PRIVATE SERVERS --
 	if ServerType == "Private" or ServerType == "Test_Private" then
 		
-		-- Get the private world save
+		-- Get the private world save and push profile to current server data
 		worldProfile = ServerStore:StartSessionAsync(privateServerKey)
-		-- Load in the place with private server data
 		
 		if worldProfile then
 			worldProfile:Reconcile()
 			worldData = worldProfile
 		end
+		
+		if TESTING and TESTING_VARIABLES and not TESTING_PUBLIC then
+			worldProfile.Data.Tokens = TESTING_INIT_TOKENS
+			worldProfile:Reconcile()
+		end
+		
+	-- PUBLIC SERVERS --
 	else
-		-- Public servers start from scratch: a default template
+		-- Starts with a fresh template
 		worldData = {
 			Data = table.clone(DefaultServerDataTemplate.DEFAULT_SERVER_DATA)
 		}
 	end
+	
 	isReady = true
-	
-	
 end
 
 -- On server closing, autosave server data !!PRIVATE SERVERS!!
@@ -87,29 +119,39 @@ game:BindToClose(function(server: string)
 	end
 end)
 
------ Shared -----
+
+-------------------- Shared --------------------
+
 
 -- Returns server data
 function Shared.GetData()
 	return worldData
 end
 
--- Returns server profile (serverside)
+-- Returns server profile 
 function Shared.GetProfile()
+	if not worldProfile then return worldData end
 	worldProfile:Reconcile()
 	return worldProfile
 end
 
+-- Reconciles profile
 function Shared.ReconcileProfile()
+	if not worldProfile then return end
 	worldProfile:Reconcile()
 end
 
 -- Returns server profile on GetProfile
 GetProfileEvent.OnServerInvoke = function(player)
+	if not worldProfile then return worldData end
+	worldProfile:Reconcile()
 	return worldProfile
 end
 
------ Misc. -----
+
+-------------------- Misc. --------------------
+
+
 -- Returns the current state of profile's structures count
 local function returnCurrentStructureData()
 	local data = {}
@@ -128,34 +170,43 @@ Players.PlayerAdded:Connect(function(player)
 	end
 	
 	-- Get profile data -> init PlacedStructures
-	worldProfile:Reconcile()
+	if worldProfile then 
 	
-	local profile_PlacedStructures = worldProfile.Data.PlacedStructures
-	
-	for ID, structure in pairs(profile_PlacedStructures) do
-		 
-		local structure_Name = structure.Type
-		local structure_Rotation = structure.rotation
-		local structure_CFrame = CFrame.new(structure.Position.X, structure.Position.Y, structure.Position.Z) * CFrame.Angles(0, math.rad(structure_Rotation), 0)
-		local structure_Tier = structure.Data.Tier
+		worldProfile:Reconcile()
+
+		local profile_PlacedStructures = worldProfile.Data.PlacedStructures
 		
-		local structure_Model = ReplicatedStorage.StructureBaseModels:WaitForChild(structure_Name)
-		
-		Events.InitStructurePlace:Fire(structure_Model, structure_Name, structure_Tier, structure_CFrame, structure_Rotation, false, ID)
+		for ID, structure in pairs(profile_PlacedStructures) do
+			 
+			local structure_Name = structure.Type
+			local structure_Rotation = structure.rotation
+			local structure_CFrame = CFrame.new(structure.Position.X, structure.Position.Y, structure.Position.Z) * CFrame.Angles(0, math.rad(structure_Rotation), 0)
+			
+			if TESTING and TESTING_VARIABLES and not TESTING_PUBLIC then
+				structure.Data.Tier = TESTING_TIER_MAP[tostring(structure_Name)]
+			end
+			
+			local structure_Tier = structure.Data.Tier
+			local structure_Model = ReplicatedStorage.StructureBaseModels:WaitForChild(structure_Name)
+			
+			Events.InitStructurePlace:Fire(structure_Model, structure_Name, structure_Tier, structure_CFrame, structure_Rotation, false, ID)
+		end
 	end
 	
+	-- Update time
 	task.spawn(function()
 		while true do
 			task.wait(1)
-			worldProfile.Data.TotalTime += 1
-			Events.UpdateStatistics:FireAllClients(worldProfile)
+			worldData.Data.TotalTime += 1
+			Events.UpdateStatistics:FireAllClients(worldData)
 		end
 	end)
 	
+	-- Init GUI
 	Events.GetInitProfile:FireClient(player, returnCurrentStructureData())
-	Events.UpdateStatistics:FireAllClients(worldProfile)
 	
-	
+	-- Init stats
+	Events.UpdateStatistics:FireAllClients(worldData)
 end)
 
 local ExecuteProperties = game:GetService("ReplicatedStorage").Events.ExecuteProperties

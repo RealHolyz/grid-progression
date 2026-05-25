@@ -65,8 +65,6 @@ RunStructuresSetup.setup("Sellers", RunSeller, "runSeller", activeSellers)
 	Add new structures
 	  Add new ModuleScript: Modular structure additions and functionalities
 
-	Fix square color on generator spawn
-
 	Modifier Luck Application Revamp
 	  1. Luck stacking: diminishing returns -> compounded luck = (1) + sum(Luck_i - 1)/ i^2
 	  2. Luck upgrade cost curve: cost = 20x^5 per level

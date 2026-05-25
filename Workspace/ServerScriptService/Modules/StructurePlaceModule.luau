@@ -77,7 +77,7 @@ function StructurePlaceModule.place(player, structureName, structure_CFrame, str
 	end
 
 	if valid_placement then
-		StructurePlaceModule.validatedPlace(structure, structureName, 1, structure_CFrame, structureRotation, true)
+		StructurePlaceModule.validatedPlace(structure, structureName, 0, structure_CFrame, structureRotation, true)
 	end
 
 	return valid_placement

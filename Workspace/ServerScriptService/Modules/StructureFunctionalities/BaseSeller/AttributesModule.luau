@@ -348,7 +348,7 @@ function AttributesModule.calculateSquare(luck)
 	local activations = {}
 
 	for attributeName, rarityValue in pairs(DefaultList) do
-		if math.random() < (1 / rarityValue) * luck then
+		if math.random() < 1 - (1 - 1 / rarityValue) ^ luck then
 			activations[attributeName] = rarityValue
 		end
 	end
