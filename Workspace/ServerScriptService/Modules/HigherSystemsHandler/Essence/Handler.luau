@@ -88,7 +88,7 @@ function EssenceHandler.upgradeBoard(player, ButtonType)
 	local Profile = ProfileStoreManager.GetProfile()
 
 	-- Get the type of upgrade
-	local UpgradeType = UpgradeTemplate.setData(Profile.Data.EssenceUpgrades)[ButtonType]
+	local UpgradeType = UpgradeTemplate.setData(Profile.Data.EssenceUpgrades[ButtonType])[ButtonType]
 
 	-- See if server has enough Essence
 	if Profile.Data.Essence >= UpgradeType.Cost then
@@ -112,7 +112,7 @@ function EssenceHandler.upgradeBoard(player, ButtonType)
 end
 
 -- Initial Setup
-EssenceHandler.boardUpdate(ProfileStoreManager.GetProfile())
+EssenceHandler.upgradeBoard(ProfileStoreManager.GetProfile())
 
 
 ---------- Listeners ----------
