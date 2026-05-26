@@ -52,7 +52,7 @@ function StructurePlaceModule.place(player, structureName, structure_CFrame, str
 
 	local params = OverlapParams.new()
 	params.FilterType = Enum.RaycastFilterType.Exclude
-	params.ExcludeInstances = {workspace.SpawnParts.Base}
+	params.ExcludeInstances = {workspace.SpawnParts.MainParts.Base}
 
 	local structure = ReplicatedServer.StructureBaseModels:WaitForChild(structureName)
 

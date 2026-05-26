@@ -9,7 +9,7 @@ function StructureAttributes.SetData(structureName: string, tier: number)
 			Cost = math.floor(5 * math.e ^ tier)
 		},
 		BaseModifier = {
-			AttributeFactor = math.log(2 ^ tier) / 4,
+			AttributeFactor = 0.173286795 * tier, 
 			MaxUpgrades = 50,
 			Cost = math.floor(2 ^ tier)
 		},

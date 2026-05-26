@@ -2,21 +2,12 @@ local AttributesModule = require(game:GetService("ServerScriptService").Modules.
 local ProfileStoreManager = require(game:GetService("ServerScriptService").Modules.ProfileStoreManager)
 local UpdateStatistics = game:GetService("ReplicatedStorage").Events.UpdateStatistics
 local StructureAttributes = require(game:GetService("ServerScriptService").Modules.StructureAttributes)
-
+local Formatter = require(game:GetService("ReplicatedStorage").Modules.Misc.Formatter)
+local UpgradeTemplate = require(game:GetService("ServerScriptService").Modules.HigherSystemsHandler.Essence.UpgradeTemplate)
 
 local RunSeller = {}
 local RunSellTable = {}
 -- Rarity Computation functions
-local suffixes = {
-	{limit = 1e6,  suffix = "%.0f", divisor = 1},
-	{limit = 1e9,  suffix = "%.3fM", divisor = 1e6},
-	{limit = 1e12, suffix = "%.3fB", divisor = 1e9},
-	{limit = 1e15, suffix = "%.3fT", divisor = 1e12},
-	{limit = 1e18, suffix = "%.3fQ", divisor = 1e15},
-	{limit = 1e21, suffix = "%.3fQi", divisor = 1e18},
-	{limit = 1e24, suffix = "%.3fS", divisor = 1e21},
-	{limit = 1e27, suffix = "%.3fSp", divisor = 1e24},
-}
 
 local attributeLevels = {
 	{req = 1e+12, col = Color3.new(1, 0.0823529, 0.0980392), texture = true, key = "ruby"},
@@ -38,22 +29,13 @@ local rarityLevels = {
 	{limit = 1e+21, color = "Magenta"},
 }
 
-local function suffixFormat(number)
-	for _, s in ipairs(suffixes) do
-		if number < s.limit then
-			return string.format(s.suffix, number / s.divisor)
-		end
-	end
-	return string.format("%.0e", number)
-end
-
 local function build_ComputedDisplay_Computation(square: Part)
 
 	local square_Luck = square:GetAttribute("Luck")
 	local square_Rarity, square_RarestAttributeValue, square_AttributeCount, square_String = AttributesModule.calculateSquare(square_Luck)
 	
 	local textLabel = square:WaitForChild("RarityDisplay"):WaitForChild("RarityText")
-	textLabel.Text = string.format("%s%s", square_String, "\n" .. "1 in " .. suffixFormat(square_Rarity))
+	textLabel.Text = string.format("%s%s", square_String, "\n" .. "1 in " .. Formatter.format(square_Rarity))
 
 	-- Rarest Attribute -> TextColor and Outline
 	for _, level in attributeLevels do
@@ -102,7 +84,10 @@ local function sellSquare(BaseSeller: Model, sell_value)
 			hit:Destroy()
 			
 			RunSellTable[hit] = nil
-			ProfileStoreManager.GetProfile().Data.Tokens += sell_value * BaseSeller:GetAttribute("AttributeFactor")
+			
+			local EssenceMultiplier = ProfileStoreManager.GetProfile().Data.Essence
+			
+			ProfileStoreManager.GetProfile().Data.Tokens += sell_value * BaseSeller:GetAttribute("AttributeFactor") * EssenceMultiplier
 			UpdateStatistics:FireAllClients(ProfileStoreManager.GetProfile())
 		end
 	end)

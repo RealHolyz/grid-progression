@@ -77,7 +77,7 @@ function PlacementClient.StartPlacement(player, structureName, onResult)
 			
 			local params = OverlapParams.new()
 			params.FilterType = Enum.RaycastFilterType.Exclude
-			params.ExcludeInstances = {previewModel, workspace.SpawnParts.Base}
+			params.ExcludeInstances = {previewModel, workspace.SpawnParts.MainParts.Base}
 			
 			local prevParts = workspace:GetPartsInPart(hitboxPart, params)
 			

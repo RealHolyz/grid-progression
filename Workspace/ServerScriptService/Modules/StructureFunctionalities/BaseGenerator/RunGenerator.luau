@@ -2,8 +2,9 @@ local DisplaySquares = require(game:GetService("ServerScriptService").Modules.St
 local StructureAttributes = require(game:GetService("ServerScriptService").Modules.StructureAttributes)
 local ProfileStoreManager = require(game:GetService("ServerScriptService").Modules.ProfileStoreManager)
 
-
 local RunGenerator = {}
+
+local Base = workspace.SpawnParts.MainParts.Base
 
 function RunGenerator.runGenerator(activeGenerators, generator: Model)
 	if not activeGenerators[generator] then
@@ -43,4 +44,10 @@ function RunGenerator.runGenerator(activeGenerators, generator: Model)
 		end)
 	end
 end
+
+Base.Touched:Connect(function(hit)
+	if hit:IsA("Part") and hit.Name == "Square" then
+		hit:Destroy()
+	end
+end)
 return RunGenerator

@@ -1,7 +1,6 @@
 local ServerScriptService = game:GetService("ServerScriptService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Players = game:GetService("Players")
-local RunService = game:GetService("RunService")
 
 local ProfileStore = require(ServerScriptService.Libraries.ProfileStore)
 local DefaultServerDataTemplate = require(ReplicatedStorage.Modules.ProfileStoreDependencies.DefaultServiceDataTemplate)
@@ -16,10 +15,11 @@ local GetProfileEvent = Events.GetProfile
 
 local TESTING = true
 local TESTING_PUBLIC = false
-local TESTING_VARIABLES = false
-local TESTING_NUMBER = 3
+local TESTING_VARIABLES = true
+local TESTING_NUMBER = 6
 
-local TESTING_INIT_TOKENS = 0
+local TESTING_INIT_TOKENS = 10000000
+local TESTING_INIT_ESSENCE = 0
 
 local TESTING_TIER_MAP = {
 	["BaseGenerator"] = 0,
@@ -74,14 +74,13 @@ local Local = {}
 
 -------------------- Local --------------------
 
-
 -- Loads the server profile
 function Local.LoadProfile(server: string)
 	local profile = ServerStore:StartSessionAsync(privateServerKey)
 	profile:Reconcile()
 end 
 
--- Loads server data
+-- Loads server data based on key
 function Local.OnStart()
 	
 	-- PRIVATE SERVERS --
@@ -97,6 +96,7 @@ function Local.OnStart()
 		
 		if TESTING and TESTING_VARIABLES and not TESTING_PUBLIC then
 			worldProfile.Data.Tokens = TESTING_INIT_TOKENS
+			worldProfile.Data.Essence = TESTING_INIT_ESSENCE
 			worldProfile:Reconcile()
 		end
 		
@@ -173,11 +173,11 @@ Players.PlayerAdded:Connect(function(player)
 	if worldProfile then 
 	
 		worldProfile:Reconcile()
-
+		
 		local profile_PlacedStructures = worldProfile.Data.PlacedStructures
 		
 		for ID, structure in pairs(profile_PlacedStructures) do
-			 
+			
 			local structure_Name = structure.Type
 			local structure_Rotation = structure.rotation
 			local structure_CFrame = CFrame.new(structure.Position.X, structure.Position.Y, structure.Position.Z) * CFrame.Angles(0, math.rad(structure_Rotation), 0)
@@ -207,6 +207,9 @@ Players.PlayerAdded:Connect(function(player)
 	
 	-- Init stats
 	Events.UpdateStatistics:FireAllClients(worldData)
+	
+	-- Init. general data
+	Events.GetData:FireAllClients(worldData)
 end)
 
 local ExecuteProperties = game:GetService("ReplicatedStorage").Events.ExecuteProperties
