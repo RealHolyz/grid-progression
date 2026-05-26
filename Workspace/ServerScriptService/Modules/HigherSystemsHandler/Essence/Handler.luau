@@ -17,6 +17,7 @@ local validation = false
 -- TESTING
 local PRIVATE_SERVER_OVERRIDE = true
 
+
 ---------- Functions ----------
 
 
@@ -38,39 +39,29 @@ function EssenceHandler.resetEssence(player, EssencePoints, isEssenceReset)
 	
 	if validation == false then return validation end
 	
-	-- Reset Tokens -> 0
-	Profile.Data.Tokens = 0
 	
-	-- Adds Essence
-	Profile.Data.Essence += EssencePoints
+	Profile.Data.Tokens = 0 										-- Reset Tokens -> 0
+	Profile.Data.Essence += EssencePoints 							-- Adds Essence
+	Profile.Data.UnlockedSystems.Essence = true 					-- Sets Visibility (Essence)
 	
-	-- Sets Visibility (Essence)
-	Profile.Data.UnlockedSystems.Essence = true
-	
-	-- Reset Data.Structures Count -> 1
-	for key, _ in Profile.Data.Structures do
+	for key, _ in Profile.Data.Structures do						-- Reset Data.Structures Count -> 1
 		Profile.Data.Structures[key] = 1
 	end
 	
-	-- Reset Data.PlacedStructures -> nil
-	for PlacedStructure, _ in Profile.Data.PlacedStructures do
+	for PlacedStructure, _ in Profile.Data.PlacedStructures do		-- Reset Data.PlacedStructures -> nil
 		Profile.Data.PlacedStructures[PlacedStructure] = nil
 	end
 	
-	-- Destroys physical structures
-	for _, typeFolder in workspace.PlacedStructures:GetChildren() do
+	for _, typeFolder in workspace.PlacedStructures:GetChildren() do -- Destroys physical structures
 		for _, structure in typeFolder:GetChildren() do
 			structure:Destroy()
 		end
 	end
+
 	-- not isEssence = Higher System Reset, meaning that the Essence Upgrades ALSO have to be reset
 	if not isEssenceReset then 
-		
-		-- Resets Essence -> 0
-		Profile.Data.Essence = 0
-		
-		-- Resets Essence Upgrades -> 0
-		for key, upgradeCount in Profile.Data.EssenceUpgrades do
+		Profile.Data.Essence = 0									-- Resets Essence -> 0
+		for key, upgradeCount in Profile.Data.EssenceUpgrades do 	-- Resets Essence Upgrades -> 0
 			Profile.Data.EssenceUpgrades[key] = 0
 		end
 	end
@@ -80,39 +71,36 @@ function EssenceHandler.resetEssence(player, EssencePoints, isEssenceReset)
 	return validation
 end
 
--- Updates Data and Updates Board on Upgrade
-function EssenceHandler.upgradeBoard(player, ButtonType)
-	local CanBuy = false
-	local ReturnData = {}
+-- Initial Upgrade Board Loading
+function EssenceHandler.initialBoardUpdate()
+	local Profile = ProfileStoreManager.GetProfile()
+	local ReturnMap = UpgradeTemplate.setData(Profile.Data.EssenceUpgrades, true)
 
+	return ReturnMap -- Returns every upgrades' Current Factor and Next Cost
+end
+
+-- Updates Data and Updates Board on Upgrade
+function EssenceHandler.upgradeBoard(ButtonType: string)
+	local CanBuy = false
 	local Profile = ProfileStoreManager.GetProfile()
 
 	-- Get the type of upgrade
-	local UpgradeType = UpgradeTemplate.setData(Profile.Data.EssenceUpgrades[ButtonType])[ButtonType]
-
-	-- See if server has enough Essence
-	if Profile.Data.Essence >= UpgradeType.Cost then
-		-- Set Data: Cost -> Subtract Tokens using UpgradeTemplate
-		Profile.Data.Tokens -= UpgradeType.Cost
-
-		-- Increase the number of upgrades for this type in profile
-		-- Factor is accounted for in their respective RunStructure ModuleScript
-		Profile.Data.EssenceUpgrades[UpgradeType] += 1
-
-		-- Update Board Display
-		ReturnData = {
-			CurrentFactor = UpgradeType.Factor,
-			NextCost = UpgradeTemplate.setData(Profile.Data.EssenceUpgrades[UpgradeType] + 1)[UpgradeType].Cost
-		}
+	local UpgradeType = UpgradeTemplate.setData(Profile.Data.EssenceUpgrades, false)[ButtonType] -- Map: CurrentFactor, CurrentCost
+	
+	if Profile.Data.Essence >= UpgradeType.Cost then 				-- See if server has enough Essence
+		Profile.Data.Tokens -= UpgradeType.Cost 					-- Set Data: Cost -> Subtract Tokens using UpgradeTemplate
+		Profile.Data.EssenceUpgrades[ButtonType] += 1 				-- Increase the number of upgrades for this type in profile, Factor is accounted for in their respective RunStructure ModuleScript
 
 		CanBuy = true
 	end
+
+	local ReturnData = UpgradeTemplate.setData(Profile.Data.EssenceUpgrades, true)[ButtonType] -- Map: CurrentFactor, NextCost
 
 	return CanBuy, ReturnData
 end
 
 -- Initial Setup
-EssenceHandler.upgradeBoard(ProfileStoreManager.GetProfile())
+EssenceHandler.upgradeBoard("InitialButtonUpdate")
 
 
 ---------- Listeners ----------
@@ -133,15 +121,3 @@ end)
 
 
 return EssenceHandler
-
---[[
-	Essence Upgrades
-	
-	+2 base luck		Init
-	25% off upgrades
-	Auto Upgrading
-	+1 Modifiers
-	
-	Essence (itself) increases sell value (+N multiplier)
-
-]]

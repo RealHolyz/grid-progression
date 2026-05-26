@@ -1,33 +1,50 @@
 local EssenceUpgradeTemplate = {}
 
-function EssenceUpgradeTemplate.setData(upgradeCount)
+function EssenceUpgradeTemplate.setData(EssenceUpgrades, isNextUpgradeCost)
+	--[[
+		Expects: (ex.)
+		
+		EssenceUpgrades = {
+			BaseLuckIncrease = 0,
+			UpgradeBargain = 0,
+			AutoUpgrade = 0,
+			ModifierCountIncrease = 0
+		},
+
+		Returns Map
+	]]
 	
+	local nextUpgradeCostFactor = 0
+
+	if isNextUpgradeCost then
+		nextUpgradeCostFactor = 1
+	end
+
 	local Map = {
-		-- Essence Upgrades
-		-- Profile.Data.EssenceUpgrades. ...
 		BaseLuckIncrease = {
 			MaxUpgrades = 10,
-			Factor = 2 * upgradeCount, -- +2x base luck per upgrade, maxes out at +20x
-			Cost = 2 ^ upgradeCount
+			Factor = 2 * EssenceUpgrades.BaseLuckIncrease, -- +2x base luck per upgrade, maxes out at +20x
+			Cost = 2 ^ (EssenceUpgrades.BaseLuckIncrease + nextUpgradeCostFactor)
 		},
 		UpgradeBargain = {
 			MaxUpgrades = 15,
-			Factor = 1 - (1 - 0.1) ^ upgradeCount, -- n% discount, maxes out at 80%
-			Cost = 4 ^ upgradeCount
+			Factor = 1 - (1 - 0.1) ^ EssenceUpgrades.UpgradeBargain, -- n% discount, maxes out at 80%
+			Cost = 4 ^ (EssenceUpgrades.UpgradeBargain + nextUpgradeCostFactor)
 		},
 		AutoUpgrading = {
 			MaxUpgrades = 1,
-			Factor = upgradeCount, -- Upgrades your structures
+			Factor = EssenceUpgrades.AutoUpgrading, -- Upgrades your structures
 			Cost = 250
 		},
 		ModifierCountIncrease = {
 			MaxUpgrades = 49,
-			Factor = upgradeCount, -- Diminishing returns!!
-			Cost = 1.5 ^ upgradeCount
+			Factor = EssenceUpgrades.ModifierCountIncrease, -- Diminishing returns!!
+			Cost = 1.5 ^ (EssenceUpgrades.ModifierCountIncrease + nextUpgradeCostFactor)
 		}
 	}
 	
 	return Map
+
 end
 
 return EssenceUpgradeTemplate
