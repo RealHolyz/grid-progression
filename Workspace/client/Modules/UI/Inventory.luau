@@ -1,12 +1,32 @@
--- Game Services
+local Inventory = {}
+
+
+---------- SERVICES ----------
+
+
 local Players = game:GetService("Players")
+local StarterPlayer = game:GetService("StarterPlayer")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local SideFrameModule = game:GetService("StarterPlayer").StarterPlayerScripts.Modules.UI.SideFrame
+
+
+---------- MODULES ----------
+
+
 local playerGui = Players.LocalPlayer.PlayerGui
--- ModuleScripts
-local SideFrameModule = require(game:GetService("StarterPlayer").StarterPlayerScripts.Modules.UI.SideFrame)
-local PlacementClient = require(game:GetService("StarterPlayer").StarterPlayerScripts.Modules.PlacementClient)
--- Main Structural Frames / Components
+local StarterPlayerScriptsModules = StarterPlayer.StarterPlayerScripts.Modules
+
+local SideFrameModule = require(StarterPlayerScriptsModules.UI.SideFrame)
+local PlacementClient = require(StarterPlayerScriptsModules.PlacementClient)
+
+---------- EVENTS ----------
+
+local Events = ReplicatedStorage.Events
+local GetProfileEvent = Events.Data.GetProfile
+
+
+---------- Main Structural Frames / Components ----------
+
+
 local InventoryFrame = playerGui.ScreenGui.Inventory.InventoryFrame
 local SideFrame = playerGui.ScreenGui.Inventory.SideFrames
 local InventoryButton = InventoryFrame.Parent.Parent.DisplayButtons.InventoryButton
@@ -21,15 +41,19 @@ local pages = {
 	Squares = ItemsPage.Squares_ScrollingFrame,
 	Structures = ItemsPage.Structures_ScrollingFrame
 }
-	-- Events
-local GetProfileEvent = ReplicatedStorage.Events.GetProfile
+
+---------- Init. Var ----------
+
+
 	-- Nil Variables
 local currentButton = nil
 local currentStructure = nil
 	-- Misc.
 local player = game.Players.LocalPlayer
 
-local Inventory = {}
+
+---------- FUNCTIONS ----------
+
 
 function Inventory.showPage(pageName)
 	for name, frame in pairs(pages) do
@@ -39,16 +63,25 @@ function Inventory.showPage(pageName)
 	end
 end
 
-function Inventory.buildButtons(structure)
-	local child = `{structure.Type}_Template`
-	local template = Templates_Folder:FindFirstChild(child)
-
+function Inventory.buildButtons(structure, isInitial)
+	
+	local child = nil
+	
+	if isInitial then
+		child = structure.Type
+	elseif isInitial == false then
+		child = structure
+	else
+		print("ERROR")
+	end
+	
+	local template = Templates_Folder:FindFirstChild(`{child}_Template`)
 	local button = template:Clone()
 	
 	
 	button.Visible = true
 	button.Parent = pages.Structures
-	button.Text = structure.Type
+	button.Text = child
 	button.BackgroundColor = BrickColor.new("Light stone grey")
 
 	local UICorner = Instance.new("UICorner")
@@ -78,7 +111,7 @@ function Inventory.buildButtons(structure)
 			SideFrame.Interactable = true
 			SideFrame.Active = true
 
-			currentStructure = SideFrameModule.loadSideFrame(structure)
+			currentStructure = SideFrameModule.loadSideFrame(structure, isInitial)
 
 		end
 	end)
@@ -154,5 +187,9 @@ end
 function Inventory.addButtonsConditionals(structure)
 	Inventory.buildButtons(structure)
 end
+
+
+--------------------
+
 
 return Inventory

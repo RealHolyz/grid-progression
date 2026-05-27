@@ -32,9 +32,19 @@ local structureDescriptions = {
 	BaseSeller = "Transport your squares into this seller for rarity points."
 }
 
-function SideFrame.loadSideFrame(structureData)
+function SideFrame.loadSideFrame(structureData, isInitial)
+	
+	local structure = nil
 
-	descriptionBox.Text = structureDescriptions[structureData.Type]
+	if isInitial then
+		structure = structureData.Type
+	elseif isInitial == false then
+		structure = structureData
+	else
+		print("ERROR")
+	end
+	
+	descriptionBox.Text = structureDescriptions[structure]
 
 	viewportFrame.ViewportModel:ClearAllChildren()
 
@@ -43,7 +53,7 @@ function SideFrame.loadSideFrame(structureData)
 		rotateConnection = nil
 	end
 
-	local tempModel = ReplicatedStorage.StructureBaseModels[structureData.Type]:Clone()
+	local tempModel = ReplicatedStorage.StructureBaseModels[structure]:Clone()
 	tempModel.Parent = viewportFrame.ViewportModel
 	currentModel = tempModel
 
@@ -53,7 +63,7 @@ function SideFrame.loadSideFrame(structureData)
 		end
 	end)
 
-	currentStructure = structureData.Type
+	currentStructure = structure
 	
 	return currentStructure
 end

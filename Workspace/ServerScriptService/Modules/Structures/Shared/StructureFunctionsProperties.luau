@@ -1,8 +1,31 @@
-local InventoryAddStructure = game:GetService("ReplicatedStorage").Events.InventoryAddStructure
-local StructureAttributes = require(game:GetService("ServerScriptService").Modules.StructureAttributes)
-local UpdateStatistics = game:GetService("ReplicatedStorage").Events.UpdateStatistics
-
 local StructureFunctionsProperties = {}
+
+
+---------- SERVICES ----------
+
+
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local ServerScriptService = game:GetService("ServerScriptService")
+
+
+---------- MODULES ----------
+
+local Modules = ServerScriptService.Modules
+
+local UpgradeTemplate = Modules.Structures.Templates.UpgradeTemplate
+
+
+---------- EVENTS ----------
+
+
+local Events = ReplicatedStorage.Events
+
+local UpdateStatistics = Events.Gui.UpdateStatistics
+local InventoryAddStructure = Events.Structures.Gui.InventoryAddStructure
+
+
+---------- Init. ----------
+
 
 local PropertiesMap = {
 	["Move"] = function(structure: Model)
@@ -36,7 +59,7 @@ local PropertiesMap = {
 		local structure_ID = structure:GetAttribute("ID")
 		
 		if profile_Data.Data.Structures[`{structure.Name}`] == 0 then
-			InventoryAddStructure:FireClient(player, profile_Data.Data.PlacedStructures[structure_ID])	-- Update GUI -> StructureButtons
+			InventoryAddStructure:FireClient(player, profile_Data.Data.PlacedStructures[structure_ID], true)	-- Update GUI -> StructureButtons
 		end
 		
 		profile_Data.Data.PlacedStructures[structure_ID] = nil											-- Delete the key
@@ -46,7 +69,7 @@ local PropertiesMap = {
 	["Upgrade"] = function(structure: Model, profile_Data) 
 		local structure_ID = structure:GetAttribute("ID")
 		local tier = profile_Data.Data.PlacedStructures[structure_ID].Data.Tier
-		local upgrades = StructureAttributes.SetData(tostring(structure.Name), tier + 1)
+		local upgrades = UpgradeTemplate.SetData(tostring(structure.Name), tier + 1)
 		
 		if upgrades.Cost <= profile_Data.Data.Tokens and tier < upgrades.MaxUpgrades then				-- If the server can afford it and its an acceptable tier
 			profile_Data.Data.Tokens -= upgrades.Cost													-- Subtract the tokens
@@ -61,13 +84,21 @@ local PropertiesMap = {
 		local structure_ID = structure:GetAttribute("ID")
 		
 		print(`{structure.Name}: Tier {profile_Data.Data.PlacedStructures[structure_ID].Data.Tier}`)
-		print(`Next Upgrade Cost: {StructureAttributes.SetData(structure.Name, profile_Data.Data.PlacedStructures[structure_ID].Data.Tier + 1).Cost} Tokens`)
+		print(`Next Upgrade Cost: {UpgradeTemplate.SetData(structure.Name, profile_Data.Data.PlacedStructures[structure_ID].Data.Tier + 1).Cost} Tokens`)
 	end,
 	["Exit"] = function(structure: Model) end
 }
 
+
+---------- Functions ----------
+
+
 function StructureFunctionsProperties.executeProperties(player, structure, property, profile_Data, ...)
 	PropertiesMap[property](structure, profile_Data, player, ...)
 end
+
+
+--------------------
+
 
 return StructureFunctionsProperties

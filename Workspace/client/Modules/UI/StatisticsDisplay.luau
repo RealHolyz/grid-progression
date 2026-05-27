@@ -1,10 +1,25 @@
-local PlayerScripts = game:GetService("Players").LocalPlayer.PlayerScripts
-local StatisticsGroup = game:GetService("Players").LocalPlayer.PlayerGui.ScreenGui.StatisticsGroup
+local StatisticsDisplay = {}
 
-local Formatter = require(game:GetService("ReplicatedStorage"):WaitForChild("Modules").Misc.Formatter)
-local Essence = require(PlayerScripts.Modules.HigherSystems.Essence)
 
-local Events = game:GetService("ReplicatedStorage").Events
+---------- SERVICES ----------
+
+
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+
+---------- MODULES ----------
+
+
+local PlayerScripts = Players.LocalPlayer.PlayerScripts
+local StatisticsGroup = Players.LocalPlayer.PlayerGui.ScreenGui.StatisticsGroup
+
+local Formatter = require(ReplicatedStorage.Modules.Misc.Formatter)
+local Essence = require(PlayerScripts.Modules.Currencies.Essence)
+
+
+---------- Init. Variables ----------
+
 
 local group = StatisticsGroup.CanvasGroup
 
@@ -12,11 +27,7 @@ local TokensText = group.Tokens_Display
 local ProfileTimeText = group.ProfileTime_Display
 local EssenceText = group.Essence_Display
 
-local StatisticsDisplay = {}
-
-
----------- Init. Variables ----------
-
+local Events = ReplicatedStorage.Events
 
 local previousTokens = 0
 local cached_Data = nil
@@ -45,15 +56,16 @@ function StatisticsDisplay.GuiSet(data)
 	end
 end
 
-Events.GetData.OnClientEvent:Connect(function(data)
+Events.Data.GetData.OnClientEvent:Connect(function(data)
 	StatisticsDisplay.GuiSet(data)
 end)
 
 -- Request initial data from server on startup (avoids race condition with FireAllClients)
-local initData = Events.GetProfile:InvokeServer()
+local initData = Events.Data.GetProfile:InvokeServer()
 if initData then
 	StatisticsDisplay.GuiSet(initData)
 end
+
 
 ---------- Runtime Functions ----------
 
@@ -99,6 +111,8 @@ function StatisticsDisplay.displayStats(data)
 	EssenceText.Text = `Essence: {Formatter.format(data.Data.Essence)}`
 end
 
+
+--------------------
 
 
 return StatisticsDisplay

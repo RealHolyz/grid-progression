@@ -1,9 +1,20 @@
 local StructureManager = {}
 
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local PlacedStructures = workspace:WaitForChild("PlacedStructures")
 
+---------- SERVICES ----------
+
+
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+
+---------- Init. Variables ----------
+
+
+local PlacedStructures = workspace:WaitForChild("PlacedStructures")
 StructureManager.ActiveStructures = {}
+
+---------- Functions ----------
+
 
 function StructureManager.CreateStructure(structureData)
 
@@ -40,12 +51,7 @@ function StructureManager.CreateStructure(structureData)
 	return model
 end
 
-function StructureManager.RemoveStructure(id)
-	local model = StructureManager.ActiveStructures[id]
-	if model then
-		model:Destroy()
-		model = nil
-	end
-end
+--------------------
+
 
 return StructureManager

@@ -1,14 +1,33 @@
-local ReplicatedServer = game:GetService("ReplicatedStorage")
-local ServerScriptService = game:GetService("ServerScriptService")
-local Modules = ServerScriptService.Modules
-local ProfileStoreManager = require(Modules.ProfileStoreManager)
-local StructureFactory = require(Modules.StructureFactory)
-local StructureAttributes = require(Modules.StructureAttributes)
-local GetProfile = ReplicatedServer.Events.GetProfile
-
 local StructurePlaceModule = {}
 
--- Server places initial places structures from session profile
+
+---------- SERVICES ----------
+
+
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local ServerScriptService = game:GetService("ServerScriptService")
+
+
+---------- MODULES -----------
+
+
+local Modules = ServerScriptService.Modules
+
+local Core = Modules.Core
+local Structures = Modules.Structures
+local Templates = Structures.Templates
+
+local ProfileStoreManager = require(Core.ProfileStoreManager)
+local StructureFactory = require(Templates.StructureFactory)
+local UpgradeTemplate = require(Templates.UpgradeTemplate)
+
+local GetProfile = ReplicatedStorage.Events.Data.GetProfile
+
+
+---------- FUNCTIONS -----------
+
+
+-- Server places INITIAL structures from session profile
 function StructurePlaceModule.validatedPlace(structure: Model, structure_Name, structure_Tier, structure_CFrame, structure_Rotation, creatingData: boolean, ...)
 
 	-- Structure Init.
@@ -40,11 +59,12 @@ function StructurePlaceModule.validatedPlace(structure: Model, structure_Name, s
 		structure_physical:SetAttribute("ID", ...)
 	end
 	
-	for key, value in pairs(StructureAttributes.SetData(structure_Name, 1)) do
+	for key, value in pairs(UpgradeTemplate.SetData(structure_Name, 1)) do
 		structure_physical:SetAttribute(`{key}`, value)
 	end
 end
 
+-- Server places RUNTIME structures from session profile
 function StructurePlaceModule.place(player, structureName, structure_CFrame, structureRotation)
 
 	local valid_placement = true
@@ -53,7 +73,7 @@ function StructurePlaceModule.place(player, structureName, structure_CFrame, str
 	params.FilterType = Enum.RaycastFilterType.Exclude
 	params.ExcludeInstances = {workspace.SpawnParts.MainParts.Base}
 
-	local structure = ReplicatedServer.StructureBaseModels:WaitForChild(structureName)
+	local structure = ReplicatedStorage.StructureBaseModels:WaitForChild(structureName)
 
 	local hitbox = structure:WaitForChild("CenterPart"):Clone()
 	hitbox.Parent = workspace
@@ -81,6 +101,10 @@ function StructurePlaceModule.place(player, structureName, structure_CFrame, str
 
 	return valid_placement
 end
+
+
+--------------------
+
 
 return StructurePlaceModule
 

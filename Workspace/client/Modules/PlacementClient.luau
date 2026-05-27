@@ -1,16 +1,31 @@
+local PlacementClient = {}
+
+
+---------- SERVICES ----------
+
+
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 local UIS = game:GetService("UserInputService")
-local StructurePlace = ReplicatedStorage.Events.StructurePlace
 
 
-local PlacementClient = {}
+---------- EVENTS ----------
+
+
+local StructurePlace = ReplicatedStorage.Events.Structures.Placement.StructurePlace
+
+
+---------- Init. Var ----------
 
 
 local positionConnection
 local structureRotation = 0
 local notColliding = false
 local previewModel_CFrame = nil
+
+
+---------- LISTENERS ----------
+
 
 -- Rotate Keybind
 UIS.InputBegan:Connect(function(input, processed)
@@ -20,6 +35,9 @@ UIS.InputBegan:Connect(function(input, processed)
 end)
 
 
+---------- LOCAL FUNCTIONS ----------
+
+
 local function setChildrenColor(model, color)
 	for _, part in ipairs(model:GetDescendants()) do
 		if part:IsA("Part") then
@@ -27,6 +45,10 @@ local function setChildrenColor(model, color)
 		end
 	end
 end
+
+
+---------- FUNCTIONS ----------
+
 
 function PlacementClient.StartPlacement(player, structureName, onResult)
 	-- Start creating a ghost model at the mouse CFrame
@@ -116,5 +138,8 @@ function PlacementClient.StartPlacement(player, structureName, onResult)
 	end)
 	
 end
+
+--------------------
+
 
 return PlacementClient

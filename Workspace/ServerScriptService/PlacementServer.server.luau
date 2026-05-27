@@ -1,22 +1,27 @@
--- Services
+---------- SERVICES ----------
+
+
 local ReplicatedServer = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
 
--- Modules
+
+---------- MODULES ----------
+
+
 	-- References
 local Modules = ServerScriptService.Modules
-local StructureFunctionalities = Modules.StructureFunctionalities
+local RunStructures = Modules.Structures.RunStructures
 	-- ServerScript Dependencies
-local StructurePlaceModule = require(Modules.StructurePlaceModule)
-local RunStructuresSetup = require(StructureFunctionalities.RunStructuresSetup)
+local StructurePlaceHandler = require(Modules.Structures.Placement.StructurePlaceHandler)
+local RunStructuresSetup = require(Modules.Structures.Shared.RunStructuresSetup)
 	-- Structure Run Modules
-local RunGenerator = StructureFunctionalities.BaseGenerator.RunGenerator
-local RunModifier = StructureFunctionalities.BaseModifier.RunModifier
-local RunSeller = StructureFunctionalities.BaseSeller.RunSeller
+local RunGenerator = RunStructures.BaseGenerator.RunGenerator
+local RunModifier = RunStructures.BaseModifier.RunModifier
+local RunSeller = RunStructures.BaseSeller.RunSeller
 
 -- Events
-local InitStructurePlace = ReplicatedServer.Events.InitStructurePlace
-local StructurePlace = ReplicatedServer.Events.StructurePlace
+local InitStructurePlace = ReplicatedServer.Events.Structures.Placement.InitStructurePlace
+local StructurePlace = ReplicatedServer.Events.Structures.Placement.StructurePlace
 
 
 -- Variables
@@ -25,16 +30,16 @@ local activeModifiers = {}
 local activeSellers = {}
 
 -- Startup
-require(Modules.ProfileStoreManager)
-require(Modules.HigherSystemsHandler.Essence.Handler)
+require(Modules.Core.ProfileStoreManager)
+require(Modules.Currencies.Essence.Handler)
 
 -- Initial and Runtime Structure Placement
 InitStructurePlace.Event:Connect(function(structure_Model, structure_Name, structure_Tier, structure_CFrame, structure_Rotation, creatingData, ID)
-	StructurePlaceModule.validatedPlace(structure_Model, structure_Name, structure_Tier, structure_CFrame, structure_Rotation, creatingData, ID)
+	StructurePlaceHandler.validatedPlace(structure_Model, structure_Name, structure_Tier, structure_CFrame, structure_Rotation, creatingData, ID)
 end)
 
 StructurePlace.OnServerInvoke = function(player, structureName, structure_CFrame, structureRotation)
-	return StructurePlaceModule.place(player, structureName, structure_CFrame, structureRotation)
+	return StructurePlaceHandler.place(player, structureName, structure_CFrame, structureRotation)
 end
 
 -- Initial and Runtime structure functionalities
@@ -84,6 +89,23 @@ rojo syncback --input "C:\Users\Huy\OneDrive\Documents\GridProgression.rbxl"
 git add .
 git commit -m "update scripts"
 git push
+
+Events.Currencies.Essence.EssenceInit
+Events.Currencies.Essence.EssenceReset
+Events.Currencies.Essence.EssenceUpgrade
+
+Events.Data.GetProfile
+Events.Data.GetData
+Events.Data.GetInitProfile
+
+Events.Gui.SystemGuiUpdate
+Events.Gui.UpdateStatistics
+
+Events.Structures.Functionality.ExecuteProperties
+Events.Structures.Gui.InventoryAddStructure
+Events.Structures.Placement.StructurePlace
+Events.Structures.Placement.InitStructurePlace
+
 
 ]]
 

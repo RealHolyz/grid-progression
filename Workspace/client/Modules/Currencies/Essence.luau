@@ -1,11 +1,17 @@
----------- Init. Variables ----------
-
 local Essence = {}
 
-local Formatter = require(game:GetService("ReplicatedStorage").Modules.Misc.Formatter)
-local Inventory = require(game:GetService("Players").LocalPlayer.PlayerScripts.Modules.UI.Inventory)
 
-local Events = game:GetService("ReplicatedStorage").Events
+---------- SERVICES ----------
+
+
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+
+---------- MODULES ----------
+
+local Formatter = require(ReplicatedStorage.Modules.Misc.Formatter)
+
+local Events = ReplicatedStorage.Events
 
 local Essence_Model = workspace.SpawnParts.EssenceParts:FindFirstChild("EssenceModel")
 
@@ -42,15 +48,14 @@ end
 -- Sets the text of a Frame to MAXED
 local function MaxedUpgradeText(frameName: Frame)
 	local frame = Scroll:WaitForChild(frameName)
-	if not frame.NextUpgradeCostDescription and not frame.NextUpgradeCost then return end
 	
 	local OldButton: TextButton = frame:WaitForChild("Button")
 	
 	local Button: TextButton = OldButton:Clone()
 	
 	OldButton:Destroy()
-	frame.NextUpgradeCostDescription:Destroy()
-	frame.NextUpgradeCost:Destroy()
+	frame.NextUpgradeCostDescription.Text = ""
+	frame.NextUpgradeCost. Text = ""
 	
 	Button.Parent = Scroll:WaitForChild(frameName)
 	
@@ -103,36 +108,26 @@ end
 
 -- When the Essence Reset Button is activated, call the server for reset implementations
 EssenceButton.Activated:Connect(function(onResult)
-	local data = Events.EssenceReset:InvokeServer(EssencePoints)
-	
-	for _, structure in data do
-		structure.Type = structure
-		Inventory.buildButtons(structure)
-	end
+	Events.Currencies.Essence.EssenceReset:InvokeServer(EssencePoints)
 end)
 
 -- When player clicks on a certain upgrade button, call server to upgrade and update gui
 for _, frame in Scroll:GetChildren() do
 	local UpgradeButton: TextButton = frame:WaitForChild("Button")
 	UpgradeButton.Activated:Connect(function()
-		local CanBuy, UpgradeTypeTable, UpgradeType, isMaxedUpgrade = Events.EssenceUpgrade:InvokeServer(frame.Name)
+		local CanBuy, UpgradeTypeTable, UpgradeType, isMaxedUpgrade = Events.Currencies.Essence.EssenceUpgrade:InvokeServer(frame.Name)
 		if CanBuy then
 			updateSingularUpgrade(UpgradeTypeTable, UpgradeType, isMaxedUpgrade)
 		end
 	end)
 end
 
--- When the server first loads up, request gui update
-Events.GetData.OnClientEvent:Connect(function(worldData)
-	local data, isMaxedTable = Events.EssenceInit:InvokeServer()
-	updateEntireUpgradeBoard(data, isMaxedTable)
-end)
 
 -- Request initial data on startup (avoids race condition with FireAllClients)
 task.spawn(function()
-	local initData = Events.GetProfile:InvokeServer()
+	local initData = Events.Data.GetProfile:InvokeServer()
 	if initData then
-		local data, isMaxedTable = Events.EssenceInit:InvokeServer()
+		local data, isMaxedTable = Events.Currencies.Essence.EssenceInit:InvokeServer()
 		updateEntireUpgradeBoard(data, isMaxedTable)
 	end
 end)

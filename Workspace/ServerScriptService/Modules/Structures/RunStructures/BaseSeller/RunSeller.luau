@@ -1,11 +1,35 @@
-local AttributesModule = require(game:GetService("ServerScriptService").Modules.StructureFunctionalities.BaseSeller.AttributesModule)
-local ProfileStoreManager = require(game:GetService("ServerScriptService").Modules.ProfileStoreManager)
-local UpdateStatistics = game:GetService("ReplicatedStorage").Events.UpdateStatistics
-local StructureAttributes = require(game:GetService("ServerScriptService").Modules.StructureAttributes)
-local Formatter = require(game:GetService("ReplicatedStorage").Modules.Misc.Formatter)
-local UpgradeTemplate = require(game:GetService("ReplicatedStorage").Modules.HigherSystems.Essence.UpgradeTemplate)
-
 local RunSeller = {}
+
+
+---------- SERVICES ----------
+
+
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local ServerScriptService = game:GetService("ServerScriptService")
+
+
+---------- MODULES -----------
+
+
+local Modules = ServerScriptService.Modules
+local Structures = Modules.Structures
+
+local AttributesModule = require(Structures.RunStructures.BaseSeller.AttributesModule)
+local ProfileStoreManager = require(Modules.Core.ProfileStoreManager)
+local UpgradeTemplate = require(Structures.Templates.UpgradeTemplate)
+local Formatter = require(ReplicatedStorage.Modules.Misc.Formatter)
+
+
+---------- EVENTS ----------
+
+
+local Events = ReplicatedStorage.Events
+local UpdateStatistics = Events.Gui.UpdateStatistics
+
+
+---------- FUNCTIONS ----------
+
+
 local RunSellTable = {}
 -- Rarity Computation functions
 
@@ -71,7 +95,7 @@ local function sellSquare(BaseSeller: Model, sell_value)
 	
 	-- Gets ID and sets attribute
 	local structure_ID = BaseSeller:GetAttribute("ID")
-	local structure_attributes = StructureAttributes.SetData(`{BaseSeller.Name}`, ProfileStoreManager.GetProfile().Data.PlacedStructures[structure_ID].Data.Tier)
+	local structure_attributes = UpgradeTemplate.SetData(`{BaseSeller.Name}`, ProfileStoreManager.GetProfile().Data.PlacedStructures[structure_ID].Data.Tier)
 	local structure_AttributeFactor = structure_attributes.AttributeFactor
 
 	BaseSeller:SetAttribute("AttributeFactor", structure_AttributeFactor)
@@ -106,6 +130,8 @@ function RunSeller.runSeller(activeSellers, BaseSeller: Model)
 	end
 end
 
+
+--------------------
 
 
 return RunSeller

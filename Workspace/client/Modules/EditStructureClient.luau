@@ -1,14 +1,36 @@
-local playerGui = game:GetService("Players").LocalPlayer.PlayerGui
-local GetProfile = game:GetService("ReplicatedStorage").Events.GetProfile
-local ExecuteProperties = game:GetService("ReplicatedStorage").Events.ExecuteProperties
-
 local EditStructureClient = {}
+
+
+---------- SERVICES ----------
+
+
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+
+---------- EVENTS ----------
+
+
+local Events = ReplicatedStorage.Events
+local GetProfile = Events.Data.GetProfile
+local ExecuteProperties = Events.Structures.Functionality.ExecuteProperties
+
+
+---------- Init. Var ----------
+
+local playerGui = Players.LocalPlayer.PlayerGui
+
+local PlacedStructures = workspace.PlacedStructures
 
 local propertiesMap = {
 	BaseGenerator = {"Move", "Sell", "Store", "Upgrade", "View Stats", "Exit"},
 	BaseModifier = {"Move", "Sell", "Store", "Upgrade", "View Stats", "Exit"},
 	BaseSeller = {"Move", "Sell", "Store", "Upgrade", "View Stats", "Exit"}
 }
+
+
+---------- LOCAL FUNCTIONS ----------
+
 
 local function showProperties(structure: Model)
 	local billboardGUI = Instance.new("BillboardGui")
@@ -70,8 +92,6 @@ local function showProperties(structure: Model)
 	end
 end
 
-
-
 local function addInstances(structure: Model)
 	if structure:GetAttribute("EditSetup") then return end
 	
@@ -85,7 +105,9 @@ local function addInstances(structure: Model)
 	structure:SetAttribute("EditSetup")
 end
 
-local PlacedStructures = workspace.PlacedStructures
+
+---------- FUNCTIONS ----------
+
 
 function EditStructureClient.runProperties(activeStructures)
 	
@@ -112,4 +134,9 @@ function EditStructureClient.runProperties(activeStructures)
 	end
 	
 end
+
+
+--------------------
+
+
 return EditStructureClient

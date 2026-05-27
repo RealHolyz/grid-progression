@@ -101,6 +101,9 @@
           "Enum": 0
         },
         "FilteringEnabled": true,
+        "ImprovedAnimationConstraint": {
+          "Enum": 0
+        },
         "LayeredClothingCacheOptimizations": {
           "Enum": 0
         },

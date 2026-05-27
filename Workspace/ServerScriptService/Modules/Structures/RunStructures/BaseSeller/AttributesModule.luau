@@ -1,5 +1,9 @@
 local AttributesModule = {}
 
+
+----------- Init. Var ----------
+
+
 local DefaultList = {
 	Cubed = 5,
 	Reflective = 8,
@@ -342,7 +346,10 @@ local DefaultList = {
 	Tau = 6.28318e+100,
 }
 
--- Calculates attributes and rarity for a single square
+
+---------- FUNCTIONS -----------
+
+
 function AttributesModule.calculateSquare(luck)
 
 	local activations = {}
@@ -377,5 +384,9 @@ function AttributesModule.calculateSquare(luck)
 	
 	return square_Rarity, square_RarestAttributeValue, square_AttributeCount, square_String
 end
+
+
+--------------------
+
 
 return AttributesModule

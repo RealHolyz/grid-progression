@@ -1,11 +1,19 @@
+local DisplaySquare = {}
+
+
+---------- SERVICES ----------
+
+
 local PhysicsService = game:GetService("PhysicsService")
 
 
-local DisplaySquare = {}
+---------- FUNCTIONS -----------
+
 
 PhysicsService:RegisterCollisionGroup("Squares")
 PhysicsService:CollisionGroupSetCollidable("Squares", "Squares", false)
 
+-- Creates the DISPLAY of the square
 function DisplaySquare.build_InitialDisplay(BaseGenerator_CFrame, BaseSeller, isComputed)
 	
 	-- Creating the square instance
@@ -46,5 +54,9 @@ function DisplaySquare.build_InitialDisplay(BaseGenerator_CFrame, BaseSeller, is
 	square:SetAttribute("Computed", isComputed)
 	square:SetNetworkOwner(nil)
 end
+
+
+--------------------
+
 
 return DisplaySquare

@@ -1,11 +1,18 @@
+---------- SERVICES ----------
+
+
 local ServerScriptService = game:GetService("ServerScriptService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Players = game:GetService("Players")
 
+
+---------- MODULES ----------
+
+
 local ProfileStore = require(ServerScriptService.Libraries.ProfileStore)
 local DefaultServerDataTemplate = require(ReplicatedStorage.Modules.ProfileStoreDependencies.DefaultServiceDataTemplate)
-local StructureFactory = require(ServerScriptService.Modules.StructureFactory)
-local StructureFunctionsProperties = require(ServerScriptService.Modules.StructureFunctionalities.StructureFunctionsProperties)
+local StructureFactory = require(ServerScriptService.Modules.Structures.Templates.StructureFactory)
+local StructureFunctionsProperties = require(ServerScriptService.Modules.Structures.Shared.StructureFunctionsProperties)
 
 local Events = ReplicatedStorage:WaitForChild("Events")
 
@@ -15,11 +22,11 @@ local Events = ReplicatedStorage:WaitForChild("Events")
 
 local TESTING = true
 local TESTING_PUBLIC = false
-local TESTING_VARIABLES = false
+local TESTING_VARIABLES = true
 local TESTING_NUMBER = 10
 
-local TESTING_INIT_TOKENS = 0
-local TESTING_INIT_ESSENCE = 0
+local TESTING_INIT_TOKENS = 1e+15
+local TESTING_INIT_ESSENCE = 100
 
 local TESTING_TIER_MAP = {
 	["BaseGenerator"] = 0,
@@ -107,7 +114,7 @@ function Local.InitStructures(PlacedStructures)
 		local structure_Tier = structure.Data.Tier
 		local structure_Model = ReplicatedStorage.StructureBaseModels:WaitForChild(structure_Name)
 		
-		Events.InitStructurePlace:Fire(structure_Model, structure_Name, structure_Tier, structure_CFrame, structure_Rotation, false, ID)
+		Events.Structures.Placement.InitStructurePlace:Fire(structure_Model, structure_Name, structure_Tier, structure_CFrame, structure_Rotation, false, ID)
 	end
 end
 
@@ -215,22 +222,22 @@ Players.PlayerAdded:Connect(function(player)
 		while true do
 			task.wait(1)
 			worldData.Data.TotalTime += 1
-			Events.UpdateStatistics:FireAllClients(worldData)
+			Events.Gui.UpdateStatistics:FireAllClients(worldData)
 		end
 	end)
 	
-	-- Init GUI
-	Events.GetInitProfile:FireClient(player, returnCurrentStructureData())
+	-- Init GUI 
+	Events.Data.GetInitProfile:FireClient(player, returnCurrentStructureData())
 	
 	-- Init stats
-	Events.UpdateStatistics:FireAllClients(worldData)
+	Events.Gui.UpdateStatistics:FireAllClients(worldData)
 	
 	-- Init. general data
-	Events.GetData:FireAllClients(worldData)
+	Events.Data.GetData:FireAllClients(worldData)
 end)
 
 -- Returns server profile on GetProfile
-Events.GetProfile.OnServerInvoke = function(player)
+Events.Data.GetProfile.OnServerInvoke = function(player)
 	while not isReady do
 		task.wait()
 	end
@@ -247,7 +254,7 @@ task.spawn(function()
 	Local.InitStructures(worldProfile.Data.PlacedStructures)
 end)
 
-Events.ExecuteProperties.OnServerInvoke = function(player, structure, property)
+Events.Structures.Functionality.ExecuteProperties.OnServerInvoke = function(player, structure, property)
 	local profile_data = Shared.GetProfile()
 	StructureFunctionsProperties.executeProperties(player, structure, property, profile_data)
 end

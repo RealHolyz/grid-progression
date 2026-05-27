@@ -1,14 +1,34 @@
----------- Init. ----------
-
-
 local EssenceHandler = {}
 
-local EssenceResetEvent = game:GetService("ReplicatedStorage").Events.EssenceReset
-local UpgradeTemplate = require(game:GetService("ReplicatedStorage").Modules.HigherSystems.Essence.UpgradeTemplate)
-local GetData = game:GetService("ReplicatedStorage").Events.GetData
-local ProfileStoreManager = require(game:GetService("ServerScriptService").Modules.ProfileStoreManager)
-local EssenceUpgrade = game:GetService("ReplicatedStorage").Events.EssenceUpgrade
-local EssenceInit = game:GetService("ReplicatedStorage").Events.EssenceInit
+
+---------- SERVICES ----------
+
+
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local ServerScriptService = game:GetService("ServerScriptService")
+
+
+---------- EVENTS ----------
+
+
+local Events = ReplicatedStorage.Events
+
+local GetData = Events.Data.GetData
+
+local EssenceResetEvent = Events.Currencies.Essence.EssenceReset
+local EssenceUpgrade = Events.Currencies.Essence.EssenceUpgrade
+local EssenceInit = Events.Currencies.Essence.EssenceInit
+
+
+---------- MODULES ----------
+
+
+
+local EssenceUpgradeTemplate = require(ReplicatedStorage.Modules.Currencies.Essence.EssenceUpgradeTemplate)
+local ProfileStoreManager = require(ServerScriptService.Modules.Core.ProfileStoreManager)
+
+
+
 
 ---------- Init. Variables ----------
 
@@ -44,11 +64,19 @@ function EssenceHandler.resetEssence(player, EssencePoints, isEssenceReset)
 	Profile.Data.Tokens = 0 										-- Reset Tokens -> 0
 	Profile.Data.Essence += EssencePoints 							-- Adds Essence
 	Profile.Data.UnlockedSystems.Essence = true 					-- Sets Visibility (Essence)
-
+	
+	for structure, count in ProfileStoreManager.GetProfile().Data.Structures do	-- Update GUI -> StructureButtons
+		if count == 0 then
+			Events.Structures.Gui.InventoryAddStructure:FireAllClients(structure, false)
+		end
+	end
+	
 	for key, _ in Profile.Data.Structures do						-- Reset Data.Structures Count -> 1
 		Profile.Data.Structures[key] = 1
 	end
-
+	
+	
+	
 	for PlacedStructure, _ in Profile.Data.PlacedStructures do		-- Reset Data.PlacedStructures -> nil
 		Profile.Data.PlacedStructures[PlacedStructure] = nil
 	end
@@ -75,7 +103,7 @@ end
 -- Initial Upgrade Board Loading
 function EssenceHandler.initialBoardUpdate()
 	local Profile = ProfileStoreManager.GetProfile()
-	local ReturnMap = UpgradeTemplate.setData(Profile.Data.EssenceUpgrades, true)
+	local ReturnMap = EssenceUpgradeTemplate.setData(Profile.Data.EssenceUpgrades, true)
 	
 	local isMaxedTable = {
 		AutoUpgrade = false, 
@@ -100,7 +128,7 @@ function EssenceHandler.upgradeBoard(UpgradeType: string)
 	local Profile = ProfileStoreManager.GetProfile()
 	
 	-- Get the type of upgrade
-	local UpgradeTypeTable = UpgradeTemplate.setData(Profile.Data.EssenceUpgrades, false)[UpgradeType] -- Map: CurrentFactor, CurrentCost
+	local UpgradeTypeTable = EssenceUpgradeTemplate.setData(Profile.Data.EssenceUpgrades, false)[UpgradeType] -- Map: CurrentFactor, CurrentCost
 	
 	if Profile.Data.Essence >= UpgradeTypeTable.Cost then 									-- See if server has enough Essence
 		Profile.Data.Essence -= UpgradeTypeTable.Cost 										-- Set Data: Cost -> Subtract Tokens using UpgradeTemplate
@@ -113,7 +141,7 @@ function EssenceHandler.upgradeBoard(UpgradeType: string)
 		end
 	end
 
-	local ReturnData = UpgradeTemplate.setData(Profile.Data.EssenceUpgrades, true)[UpgradeType] -- Map: CurrentFactor, NextCost, MaxUpg
+	local ReturnData = EssenceUpgradeTemplate.setData(Profile.Data.EssenceUpgrades, true)[UpgradeType] -- Map: CurrentFactor, NextCost, MaxUpg
 
 	return CanBuy, ReturnData, UpgradeType, isMaxedUpgrade
 end

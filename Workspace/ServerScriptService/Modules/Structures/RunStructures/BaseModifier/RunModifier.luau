@@ -1,7 +1,29 @@
-local StructureAttributes = require(game:GetService("ServerScriptService").Modules.StructureAttributes)
-local ProfileStoreManager = require(game:GetService("ServerScriptService").Modules.ProfileStoreManager)
-local UpgradeTemplate = require(game:GetService("ReplicatedStorage").Modules.HigherSystems.Essence.UpgradeTemplate)
 local RunModifier = {}
+
+
+---------- SERVICES ----------
+
+
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local ServerScriptService = game:GetService("ServerScriptService")
+
+
+---------- MODULES -----------
+
+
+local Modules = ServerScriptService.Modules
+
+local Core = Modules.Core
+local Structures = Modules.Structures
+local Templates = Structures.Templates
+
+local EssenceUpgradeTemplate = require(ReplicatedStorage.Modules.Currencies.Essence.EssenceUpgradeTemplate)
+local ProfileStoreManager = require(ServerScriptService.Modules.Core.ProfileStoreManager)
+local UpgradeTemplate = require(ServerScriptService.Modules.Structures.Templates.UpgradeTemplate)
+
+
+---------- FUNCTIONS -----------
+
 
 function RunModifier.runModifier(activeModifiers, BaseModifier: Model)
 	if not activeModifiers[BaseModifier] then 
@@ -10,10 +32,10 @@ function RunModifier.runModifier(activeModifiers, BaseModifier: Model)
 		local hitbox = BaseModifier:WaitForChild("Hitbox")
 		
 		local structure_ID = BaseModifier:GetAttribute("ID")
-		local structure_attributes = StructureAttributes.SetData(`{BaseModifier.Name}`, ProfileStoreManager.GetProfile().Data.PlacedStructures[structure_ID].Data.Tier)
+		local structure_attributes = UpgradeTemplate.SetData(`{BaseModifier.Name}`, ProfileStoreManager.GetProfile().Data.PlacedStructures[structure_ID].Data.Tier)
 		local structure_AttributeFactor = structure_attributes.AttributeFactor
 		local EssenceUpgrades = ProfileStoreManager.GetProfile().Data.EssenceUpgrades
-		local BaseLuckIncreaseFactor = UpgradeTemplate.setData(EssenceUpgrades, false)["BaseLuckIncrease"]["Factor"]
+		local BaseLuckIncreaseFactor = EssenceUpgradeTemplate.setData(EssenceUpgrades, false)["BaseLuckIncrease"]["Factor"]
 		
 		BaseModifier:SetAttribute("AttributeFactor", structure_AttributeFactor)
 		
@@ -29,5 +51,9 @@ function RunModifier.runModifier(activeModifiers, BaseModifier: Model)
 		end)
 	end
 end
+
+
+---------------------
+
 
 return RunModifier

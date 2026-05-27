@@ -1,19 +1,6 @@
 local EssenceUpgradeTemplate = {}
 
 function EssenceUpgradeTemplate.setData(EssenceUpgrades, isNextUpgradeCost)
-	--[[
-		Expects: (ex.)
-		
-		EssenceUpgrades = {
-			BaseLuckIncrease = 0,
-			UpgradeBargain = 0,
-			AutoUpgrade = 0,
-			ModifierCountIncrease = 0
-		},
-
-		Returns Map
-	]]
-
 	local nextUpgradeCostFactor = 0
 
 	if isNextUpgradeCost then

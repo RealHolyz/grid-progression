@@ -1,17 +1,29 @@
-local DisplaySquares = require(game:GetService("ServerScriptService").Modules.StructureFunctionalities.BaseGenerator.DisplaySquare)
-local StructureAttributes = require(game:GetService("ServerScriptService").Modules.StructureAttributes)
-local ProfileStoreManager = require(game:GetService("ServerScriptService").Modules.ProfileStoreManager)
-
 local RunGenerator = {}
 
-local Base = workspace.SpawnParts.MainParts.Base
+
+---------- SERVICES ----------
+
+local ServerScriptService = game:GetService("ServerScriptService")
+
+local Modules = ServerScriptService.Modules
+
+local Core = Modules.Core
+local Structures = Modules.Structures
+
+local DisplaySquares = require(Structures.RunStructures.BaseGenerator.DisplaySquare)
+local UpgradeTemplate = require(Structures.Templates.UpgradeTemplate)
+local ProfileStoreManager = require(Core.ProfileStoreManager)
+
+
+---------- FUNCTIONS ----------
+
 
 function RunGenerator.runGenerator(activeGenerators, generator: Model)
 	if not activeGenerators[generator] then
 		activeGenerators[generator] = true
 		
 		local structure_ID = generator:GetAttribute("ID")
-		local structure_attributes = StructureAttributes.SetData(`{generator.Name}`, ProfileStoreManager.GetProfile().Data.PlacedStructures[structure_ID].Data.Tier)
+		local structure_attributes = UpgradeTemplate.SetData(`{generator.Name}`, ProfileStoreManager.GetProfile().Data.PlacedStructures[structure_ID].Data.Tier)
 		local structure_AttributeFactor = structure_attributes.AttributeFactor
 
 		generator:SetAttribute("AttributeFactor", structure_AttributeFactor)
@@ -45,9 +57,18 @@ function RunGenerator.runGenerator(activeGenerators, generator: Model)
 	end
 end
 
-Base.Touched:Connect(function(hit)
+
+---------- LISTENERS ----------
+
+
+workspace.SpawnParts.MainParts.Base.Touched:Connect(function(hit)
 	if hit:IsA("Part") and hit.Name == "Square" then
 		hit:Destroy()
 	end
 end)
+
+
+--------------------
+
+
 return RunGenerator
