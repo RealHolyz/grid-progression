@@ -10,9 +10,6 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Events = ReplicatedStorage.Events
 
-local GetProfileEvent = Events.Data.GetProfile
-local StructurePlace = Events.Structures.Placement.StructurePlace
-
 
 ---------- Init. Var ----------
 
@@ -38,7 +35,7 @@ local PlayerScripts = Players.LocalPlayer.PlayerScripts
 
 local UI = PlayerScripts.Modules.UI
 
-local Inventory = require(UI.Inventory)
+local InventoryModule = require(UI.Inventory)
 local SideFrameModule = require(UI.SideFrame)
 local EditStructureClient = require(PlayerScripts.Modules.EditStructureClient)
 local StatisticsDisplay = require(UI.StatisticsDisplay)
@@ -57,21 +54,20 @@ end)
 
 Events.Data.GetInitProfile.OnClientEvent:Connect(function(profileData)
 	for _, structure in ipairs(profileData) do
-		Inventory.buildButtons(structure, true)
+		InventoryModule.buildButtons(structure, true)
 	end
 end)
 
 button.MouseButton1Click:Connect(function()
-	Inventory.toggleVisibility()
+	InventoryModule.toggleVisibility()
 end)
 
 sideFrame.StructuresSideFrame.StartPlace.Activated:Connect(function()
-	Inventory.startPlacing()
+	InventoryModule.startPlacing()
 end)
 
 Events.Structures.Gui.InventoryAddStructure.OnClientEvent:Connect(function(structure, isInitial)
-	print(isInitial)
-	Inventory.buildButtons(structure, isInitial)
+	InventoryModule.buildButtons(structure, isInitial)
 end)
 
 Events.Gui.UpdateStatistics.OnClientEvent:Connect(function(data)

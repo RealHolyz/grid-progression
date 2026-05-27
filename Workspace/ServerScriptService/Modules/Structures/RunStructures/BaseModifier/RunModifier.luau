@@ -18,8 +18,8 @@ local Structures = Modules.Structures
 local Templates = Structures.Templates
 
 local EssenceUpgradeTemplate = require(ReplicatedStorage.Modules.Currencies.Essence.EssenceUpgradeTemplate)
-local ProfileStoreManager = require(ServerScriptService.Modules.Core.ProfileStoreManager)
-local UpgradeTemplate = require(ServerScriptService.Modules.Structures.Templates.UpgradeTemplate)
+local ProfileStoreManager = require(Core.ProfileStoreManager)
+local UpgradeTemplate = require(Templates.UpgradeTemplate)
 
 
 ---------- FUNCTIONS -----------

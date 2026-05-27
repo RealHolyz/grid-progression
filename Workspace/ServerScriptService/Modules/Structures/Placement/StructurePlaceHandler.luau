@@ -21,8 +21,6 @@ local ProfileStoreManager = require(Core.ProfileStoreManager)
 local StructureFactory = require(Templates.StructureFactory)
 local UpgradeTemplate = require(Templates.UpgradeTemplate)
 
-local GetProfile = ReplicatedStorage.Events.Data.GetProfile
-
 
 ---------- FUNCTIONS -----------
 
@@ -80,7 +78,11 @@ function StructurePlaceModule.place(player, structureName, structure_CFrame, str
 	hitbox:PivotTo(structure_CFrame)
 
 	local collisionParts = workspace:GetPartsInPart(hitbox, params)
-
+	
+	if #collisionParts > 0 then
+		valid_placement = false
+	end
+	
 	hitbox:Destroy()
 
 	local profile = ProfileStoreManager.GetData()
