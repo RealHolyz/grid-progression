@@ -37,6 +37,9 @@ function StatisticsDisplay.GuiSet(data)
 					part.Transparency = 0
 					part.CanCollide = true
 				end
+				if part:IsA("SurfaceGui") then
+					part.Enabled = true
+				end
 			end
 		end
 	end
@@ -45,6 +48,12 @@ end
 Events.GetData.OnClientEvent:Connect(function(data)
 	StatisticsDisplay.GuiSet(data)
 end)
+
+-- Request initial data from server on startup (avoids race condition with FireAllClients)
+local initData = Events.GetProfile:InvokeServer()
+if initData then
+	StatisticsDisplay.GuiSet(initData)
+end
 
 ---------- Runtime Functions ----------
 
@@ -66,9 +75,8 @@ task.spawn(function()
 		if isReady and cached_Data then
 			cached_TPS = cached_Data.Data.Tokens - previousTokens 
 			previousTokens = cached_Data.Data.Tokens
+			Essence.updateApproxEssence(cached_Data.Data.Tokens)
 		end
-		
-		Essence.updateApproxEssence(cached_Data.Data.Tokens)
 	end	
 end)
 
@@ -78,7 +86,12 @@ function StatisticsDisplay.displayStats(data)
 	isReady = true
 	
 	if cached_TPS == nil then
-		task.wait(5)
+		cached_TPS = 0
+		task.wait(1)
+		if isReady and cached_Data then
+			cached_TPS = cached_Data.Data.Tokens - previousTokens
+			previousTokens = cached_Data.Data.Tokens
+		end
 	end
 	
 	TokensText.Text = `Tokens: {Formatter.format(data.Data.Tokens)}			T/s: {Formatter.format(cached_TPS)}`

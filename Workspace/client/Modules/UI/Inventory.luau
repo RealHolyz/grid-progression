@@ -143,22 +143,7 @@ function Inventory.startPlacing()
 			local data = GetProfileEvent:InvokeServer()
 			
 			if not data then return end
-			--[[
-			{
-                ["Data"] =  ▼  {
-                   ["FirstTime"] = true,
-                   ["PlacedStructures"] = {},
-                   ["Squares"] = {},
-                   ["Structures"] =  ▼  {
-                      ["BaseGenerator"] = 1,
-                      ["BaseModifier"] = 1,
-                      ["BaseSeller"] = 1
-                   },
-                   ["Tokens"] = 0,
-                   ["TotalTime"] = 0
-                }
-             }  -  Server - ProfileStoreManager:134
-			]]
+			
 			if data.Data.Structures[currentStructure] == 0 then
 				InventoryFrame.ItemsPage.Structures_ScrollingFrame:WaitForChild(`{currentStructure}_Template`):Destroy()
 			end

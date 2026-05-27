@@ -35,37 +35,29 @@ local PropertiesMap = {
 	["Store"] = function(structure: Model, profile_Data, player)
 		local structure_ID = structure:GetAttribute("ID")
 		
-		-- Update GUI -> StructureButtons
 		if profile_Data.Data.Structures[`{structure.Name}`] == 0 then
-			InventoryAddStructure:FireClient(player, profile_Data.Data.PlacedStructures[structure_ID])
+			InventoryAddStructure:FireClient(player, profile_Data.Data.PlacedStructures[structure_ID])	-- Update GUI -> StructureButtons
 		end
 		
-		-- Delete the key
-		profile_Data.Data.PlacedStructures[structure_ID] = nil
-		-- Increase Structure Count (Inventory)
-		profile_Data.Data.Structures[`{structure.Name}`] += 1
-		-- Destroy the physical structure
-		structure:Destroy()
+		profile_Data.Data.PlacedStructures[structure_ID] = nil											-- Delete the key
+		profile_Data.Data.Structures[`{structure.Name}`] += 1											-- Increase Structure Count (Inventory)
+		structure:Destroy()																				-- Destroy the physical structure
 	end,
 	["Upgrade"] = function(structure: Model, profile_Data) 
 		local structure_ID = structure:GetAttribute("ID")
 		local tier = profile_Data.Data.PlacedStructures[structure_ID].Data.Tier
 		local upgrades = StructureAttributes.SetData(tostring(structure.Name), tier + 1)
 		
-		-- If the server can afford it and its an acceptable tier
-		if upgrades.Cost <= profile_Data.Data.Tokens and tier < upgrades.MaxUpgrades then
-			-- Subtract the tokens
-			profile_Data.Data.Tokens -= upgrades.Cost
-			-- Increase the tier
-			profile_Data.Data.PlacedStructures[structure_ID].Data.Tier += 1
-			-- Set the proceeding tier
-			structure:SetAttribute("AttributeFactor", upgrades.AttributeFactor)
+		if upgrades.Cost <= profile_Data.Data.Tokens and tier < upgrades.MaxUpgrades then				-- If the server can afford it and its an acceptable tier
+			profile_Data.Data.Tokens -= upgrades.Cost													-- Subtract the tokens
+			profile_Data.Data.PlacedStructures[structure_ID].Data.Tier += 1								-- Increase the tier
+			structure:SetAttribute("AttributeFactor", upgrades.AttributeFactor)							-- Set the proceeding tier
+			
 			UpdateStatistics:FireAllClients(profile_Data)
 		end
 	end,
        
 	["View Stats"] = function(structure: Model, profile_Data) 
-		-- Shows structure name and tier
 		local structure_ID = structure:GetAttribute("ID")
 		
 		print(`{structure.Name}: Tier {profile_Data.Data.PlacedStructures[structure_ID].Data.Tier}`)

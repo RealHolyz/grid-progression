@@ -8,17 +8,17 @@ local StructureFactory = require(ServerScriptService.Modules.StructureFactory)
 local StructureFunctionsProperties = require(ServerScriptService.Modules.StructureFunctionalities.StructureFunctionsProperties)
 
 local Events = ReplicatedStorage:WaitForChild("Events")
-local GetProfileEvent = Events.GetProfile
 
 
 ---------- TESTING  ----------
 
+
 local TESTING = true
 local TESTING_PUBLIC = false
-local TESTING_VARIABLES = true
-local TESTING_NUMBER = 6
+local TESTING_VARIABLES = false
+local TESTING_NUMBER = 10
 
-local TESTING_INIT_TOKENS = 10000000
+local TESTING_INIT_TOKENS = 0
 local TESTING_INIT_ESSENCE = 0
 
 local TESTING_TIER_MAP = {
@@ -27,7 +27,18 @@ local TESTING_TIER_MAP = {
 	["BaseSeller"] = 0,
 }
 
+local TESTING_ESSENCE_MAP = {
+	["BaseLuckIncrease"] = 0,
+	["UpgradeBargain"] = 0,
+	["AutoUpgrade"] = 0,
+	["ModifierCountIncrease"] = 0
+}
+
+local TESTING_ESSENCE_UNLOCKED = false
+
+
 ---------- INIT. PROFILE/ DATA ----------
+
 
 local ownerID = game.PrivateServerOwnerId
 
@@ -80,6 +91,26 @@ function Local.LoadProfile(server: string)
 	profile:Reconcile()
 end 
 
+-- Get profile data -> init PlacedStructures
+function Local.InitStructures(PlacedStructures)
+	
+	for ID, structure in pairs(PlacedStructures) do
+
+		local structure_Name = structure.Type
+		local structure_Rotation = structure.rotation
+		local structure_CFrame = CFrame.new(structure.Position.X, structure.Position.Y, structure.Position.Z) * CFrame.Angles(0, math.rad(structure_Rotation), 0)
+
+		if TESTING and TESTING_VARIABLES and not TESTING_PUBLIC then
+			structure.Data.Tier = TESTING_TIER_MAP[tostring(structure_Name)]
+		end
+
+		local structure_Tier = structure.Data.Tier
+		local structure_Model = ReplicatedStorage.StructureBaseModels:WaitForChild(structure_Name)
+		
+		Events.InitStructurePlace:Fire(structure_Model, structure_Name, structure_Tier, structure_CFrame, structure_Rotation, false, ID)
+	end
+end
+
 -- Loads server data based on key
 function Local.OnStart()
 	
@@ -89,14 +120,22 @@ function Local.OnStart()
 		-- Get the private world save and push profile to current server data
 		worldProfile = ServerStore:StartSessionAsync(privateServerKey)
 		
+		-- Reconcile and push to worldData
 		if worldProfile then
 			worldProfile:Reconcile()
 			worldData = worldProfile
 		end
 		
+		-- Testing Implementations
 		if TESTING and TESTING_VARIABLES and not TESTING_PUBLIC then
 			worldProfile.Data.Tokens = TESTING_INIT_TOKENS
 			worldProfile.Data.Essence = TESTING_INIT_ESSENCE
+			worldProfile.Data.UnlockedSystems.Essence = TESTING_ESSENCE_UNLOCKED
+			
+			for k, upgrade in TESTING_ESSENCE_MAP do
+				worldProfile.Data.EssenceUpgrades[k] = upgrade
+			end
+			
 			worldProfile:Reconcile()
 		end
 		
@@ -125,12 +164,18 @@ end)
 
 -- Returns server data
 function Shared.GetData()
+	while not isReady do
+		task.wait()
+	end
 	return worldData
 end
 
 -- Returns server profile 
 function Shared.GetProfile()
 	if not worldProfile then return worldData end
+	while not isReady do
+		task.wait()
+	end
 	worldProfile:Reconcile()
 	return worldProfile
 end
@@ -138,14 +183,10 @@ end
 -- Reconciles profile
 function Shared.ReconcileProfile()
 	if not worldProfile then return end
+	while not isReady do
+		task.wait()
+	end
 	worldProfile:Reconcile()
-end
-
--- Returns server profile on GetProfile
-GetProfileEvent.OnServerInvoke = function(player)
-	if not worldProfile then return worldData end
-	worldProfile:Reconcile()
-	return worldProfile
 end
 
 
@@ -169,30 +210,6 @@ Players.PlayerAdded:Connect(function(player)
 		task.wait()
 	end
 	
-	-- Get profile data -> init PlacedStructures
-	if worldProfile then 
-	
-		worldProfile:Reconcile()
-		
-		local profile_PlacedStructures = worldProfile.Data.PlacedStructures
-		
-		for ID, structure in pairs(profile_PlacedStructures) do
-			
-			local structure_Name = structure.Type
-			local structure_Rotation = structure.rotation
-			local structure_CFrame = CFrame.new(structure.Position.X, structure.Position.Y, structure.Position.Z) * CFrame.Angles(0, math.rad(structure_Rotation), 0)
-			
-			if TESTING and TESTING_VARIABLES and not TESTING_PUBLIC then
-				structure.Data.Tier = TESTING_TIER_MAP[tostring(structure_Name)]
-			end
-			
-			local structure_Tier = structure.Data.Tier
-			local structure_Model = ReplicatedStorage.StructureBaseModels:WaitForChild(structure_Name)
-			
-			Events.InitStructurePlace:Fire(structure_Model, structure_Name, structure_Tier, structure_CFrame, structure_Rotation, false, ID)
-		end
-	end
-	
 	-- Update time
 	task.spawn(function()
 		while true do
@@ -212,12 +229,30 @@ Players.PlayerAdded:Connect(function(player)
 	Events.GetData:FireAllClients(worldData)
 end)
 
-local ExecuteProperties = game:GetService("ReplicatedStorage").Events.ExecuteProperties
+-- Returns server profile on GetProfile
+Events.GetProfile.OnServerInvoke = function(player)
+	while not isReady do
+		task.wait()
+	end
+	if not worldProfile then return worldData end
+	worldProfile:Reconcile()
+	return worldProfile
+end
 
-ExecuteProperties.OnServerInvoke = function(player, structure, property)
+task.spawn(function()
+	while not isReady do
+		task.wait()
+	end
+	
+	Local.InitStructures(worldProfile.Data.PlacedStructures)
+end)
+
+Events.ExecuteProperties.OnServerInvoke = function(player, structure, property)
 	local profile_data = Shared.GetProfile()
 	StructureFunctionsProperties.executeProperties(player, structure, property, profile_data)
 end
+
+---------- Execution ----------
 
 Local.OnStart()
 

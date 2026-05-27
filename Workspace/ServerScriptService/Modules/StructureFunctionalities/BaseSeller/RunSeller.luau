@@ -3,7 +3,7 @@ local ProfileStoreManager = require(game:GetService("ServerScriptService").Modul
 local UpdateStatistics = game:GetService("ReplicatedStorage").Events.UpdateStatistics
 local StructureAttributes = require(game:GetService("ServerScriptService").Modules.StructureAttributes)
 local Formatter = require(game:GetService("ReplicatedStorage").Modules.Misc.Formatter)
-local UpgradeTemplate = require(game:GetService("ServerScriptService").Modules.HigherSystemsHandler.Essence.UpgradeTemplate)
+local UpgradeTemplate = require(game:GetService("ReplicatedStorage").Modules.HigherSystems.Essence.UpgradeTemplate)
 
 local RunSeller = {}
 local RunSellTable = {}
@@ -84,10 +84,9 @@ local function sellSquare(BaseSeller: Model, sell_value)
 			hit:Destroy()
 			
 			RunSellTable[hit] = nil
+		
 			
-			local EssenceMultiplier = ProfileStoreManager.GetProfile().Data.Essence
-			
-			ProfileStoreManager.GetProfile().Data.Tokens += sell_value * BaseSeller:GetAttribute("AttributeFactor") * EssenceMultiplier
+			ProfileStoreManager.GetProfile().Data.Tokens += sell_value * BaseSeller:GetAttribute("AttributeFactor") * (1 + ProfileStoreManager.GetProfile().Data.Essence)
 			UpdateStatistics:FireAllClients(ProfileStoreManager.GetProfile())
 		end
 	end)

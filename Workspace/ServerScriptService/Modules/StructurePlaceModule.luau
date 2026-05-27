@@ -43,7 +43,6 @@ function StructurePlaceModule.validatedPlace(structure: Model, structure_Name, s
 	for key, value in pairs(StructureAttributes.SetData(structure_Name, 1)) do
 		structure_physical:SetAttribute(`{key}`, value)
 	end
-	
 end
 
 function StructurePlaceModule.place(player, structureName, structure_CFrame, structureRotation)

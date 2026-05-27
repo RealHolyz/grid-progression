@@ -13,7 +13,7 @@ function EssenceUpgradeTemplate.setData(EssenceUpgrades, isNextUpgradeCost)
 
 		Returns Map
 	]]
-	
+
 	local nextUpgradeCostFactor = 0
 
 	if isNextUpgradeCost then
@@ -31,9 +31,9 @@ function EssenceUpgradeTemplate.setData(EssenceUpgrades, isNextUpgradeCost)
 			Factor = 1 - (1 - 0.1) ^ EssenceUpgrades.UpgradeBargain, -- n% discount, maxes out at 80%
 			Cost = 4 ^ (EssenceUpgrades.UpgradeBargain + nextUpgradeCostFactor)
 		},
-		AutoUpgrading = {
+		AutoUpgrade = {
 			MaxUpgrades = 1,
-			Factor = EssenceUpgrades.AutoUpgrading, -- Upgrades your structures
+			Factor = EssenceUpgrades.AutoUpgrade, -- Upgrades your structures
 			Cost = 250
 		},
 		ModifierCountIncrease = {
@@ -42,7 +42,7 @@ function EssenceUpgradeTemplate.setData(EssenceUpgrades, isNextUpgradeCost)
 			Cost = 1.5 ^ (EssenceUpgrades.ModifierCountIncrease + nextUpgradeCostFactor)
 		}
 	}
-	
+
 	return Map
 
 end
