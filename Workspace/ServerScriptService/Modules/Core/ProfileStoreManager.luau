@@ -22,7 +22,7 @@ local Events = ReplicatedStorage:WaitForChild("Events")
 
 local TESTING = true
 local TESTING_PUBLIC = false
-local TESTING_VARIABLES = true
+local TESTING_VARIABLES = false
 local TESTING_NUMBER = 10
 
 local TESTING_INIT_TOKENS = 1e+15
@@ -259,7 +259,9 @@ Events.Structures.Functionality.ExecuteProperties.OnServerInvoke = function(play
 	StructureFunctionsProperties.executeProperties(player, structure, property, profile_data)
 end
 
+
 ---------- Execution ----------
+
 
 Local.OnStart()
 

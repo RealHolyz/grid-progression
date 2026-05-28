@@ -12,7 +12,7 @@ local ServerScriptService = game:GetService("ServerScriptService")
 
 local Modules = ServerScriptService.Modules
 
-local UpgradeTemplate = Modules.Structures.Templates.UpgradeTemplate
+local UpgradeTemplate = require(Modules.Structures.Templates.UpgradeTemplate)
 
 
 ---------- EVENTS ----------

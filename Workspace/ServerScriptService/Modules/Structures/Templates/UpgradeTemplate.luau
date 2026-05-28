@@ -1,6 +1,6 @@
-local StructureAttributes = {}
+local UpgradeTemplate = {}
 
-function StructureAttributes.SetData(structureName: string, tier: number)
+function UpgradeTemplate.SetData(structureName: string, tier: number)
 	local structuresMap = {
 		Tier = tier,
 		BaseGenerator = {
@@ -23,4 +23,4 @@ function StructureAttributes.SetData(structureName: string, tier: number)
 	return structuresMap[structureName]
 end
 
-return StructureAttributes
+return UpgradeTemplate

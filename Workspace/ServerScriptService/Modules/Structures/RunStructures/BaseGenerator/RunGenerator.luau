@@ -29,10 +29,6 @@ function RunGenerator.runGenerator(activeGenerators, generator: Model)
 		generator:SetAttribute("AttributeFactor", structure_AttributeFactor)
 		
 		task.spawn(function()
-			
-			-- Gets ID and sets attribute
-			
-			
 			while activeGenerators[generator] and generator.Parent do
 				DisplaySquares.build_InitialDisplay(generator:GetPivot())
 				
