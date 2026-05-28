@@ -117,9 +117,12 @@ local function sellSquare(BaseSeller: Model, sell_value)
 end
 
 -- Computed Display is per BaseSeller
-function RunSeller.runSeller(activeSellers, BaseSeller: Model)
-	if not activeSellers[BaseSeller] then
-		activeSellers[BaseSeller] = true
+
+RunSeller.activeSellers = {}
+
+function RunSeller.runSeller(BaseSeller: Model)
+	if not RunSeller.activeSellers[BaseSeller] then
+		RunSeller.activeSellers[BaseSeller] = true
 		local hitbox = BaseSeller:WaitForChild("ComputeHitbox")
 		hitbox.Touched:Connect(function(hit)
 			if hit:GetAttribute("Computed") and hit:IsA("Part") then

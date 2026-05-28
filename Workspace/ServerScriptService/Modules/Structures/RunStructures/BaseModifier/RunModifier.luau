@@ -24,10 +24,11 @@ local UpgradeTemplate = require(Templates.UpgradeTemplate)
 
 ---------- FUNCTIONS -----------
 
+RunModifier.activeModifiers = {}
 
-function RunModifier.runModifier(activeModifiers, BaseModifier: Model)
-	if not activeModifiers[BaseModifier] then 
-		activeModifiers[BaseModifier] = true
+function RunModifier.runModifier(BaseModifier: Model)
+	if not RunModifier.activeModifiers[BaseModifier] then 
+		RunModifier.activeModifiers[BaseModifier] = true
 		
 		local hitbox = BaseModifier:WaitForChild("Hitbox")
 		

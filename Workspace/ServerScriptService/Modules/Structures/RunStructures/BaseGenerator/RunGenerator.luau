@@ -1,6 +1,5 @@
 local RunGenerator = {}
 
-
 ---------- SERVICES ----------
 
 local ServerScriptService = game:GetService("ServerScriptService")
@@ -17,10 +16,11 @@ local ProfileStoreManager = require(Core.ProfileStoreManager)
 
 ---------- FUNCTIONS ----------
 
+RunGenerator.activeGenerators = {}
 
-function RunGenerator.runGenerator(activeGenerators, generator: Model)
-	if not activeGenerators[generator] then
-		activeGenerators[generator] = true
+function RunGenerator.runGenerator(generator: Model)
+	if not RunGenerator.activeGenerators[generator] then
+		RunGenerator.activeGenerators[generator] = true
 		
 		local structure_ID = generator:GetAttribute("ID")
 		local structure_attributes = UpgradeTemplate.SetData(`{generator.Name}`, ProfileStoreManager.GetProfile().Data.PlacedStructures[structure_ID].Data.Tier)
@@ -29,7 +29,7 @@ function RunGenerator.runGenerator(activeGenerators, generator: Model)
 		generator:SetAttribute("AttributeFactor", structure_AttributeFactor)
 		
 		task.spawn(function()
-			while activeGenerators[generator] and generator.Parent do
+			while RunGenerator.activeGenerators[generator] and generator.Parent do
 				DisplaySquares.build_InitialDisplay(generator:GetPivot())
 				
 				task.wait(generator:GetAttribute("AttributeFactor"))

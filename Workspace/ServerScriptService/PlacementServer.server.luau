@@ -24,11 +24,6 @@ local InitStructurePlace = ReplicatedServer.Events.Structures.Placement.InitStru
 local StructurePlace = ReplicatedServer.Events.Structures.Placement.StructurePlace
 
 
--- Variables
-local activeGenerators = {}
-local activeModifiers = {}
-local activeSellers = {}
-
 -- Startup
 require(Modules.Core.ProfileStoreManager)
 require(Modules.Currencies.Essence.Handler)
@@ -43,9 +38,9 @@ StructurePlace.OnServerInvoke = function(player, structureName, structure_CFrame
 end
 
 -- Initial and Runtime structure functionalities
-RunStructuresSetup.setup("Generators", RunGenerator, "runGenerator", activeGenerators)
-RunStructuresSetup.setup("Modifiers", RunModifier, "runModifier", activeModifiers)
-RunStructuresSetup.setup("Sellers", RunSeller, "runSeller", activeSellers)
+RunStructuresSetup.setup("Generators", RunGenerator, "runGenerator")
+RunStructuresSetup.setup("Modifiers", RunModifier, "runModifier")
+RunStructuresSetup.setup("Sellers", RunSeller, "runSeller")
 
 
 --[[
